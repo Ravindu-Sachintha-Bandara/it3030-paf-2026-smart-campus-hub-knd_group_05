@@ -1,0 +1,27 @@
+# =========================
+# Spring Boot (Backend)
+# =========================
+target/
+*.class
+*.jar
+*.war
+
+# =========================
+# React (Frontend)
+# =========================
+node_modules/
+build/
+dist/
+.env
+.env.*
+
+# =========================
+# IDE and OS Files
+# =========================
+.vscode/
+.metals/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+.DS_Store

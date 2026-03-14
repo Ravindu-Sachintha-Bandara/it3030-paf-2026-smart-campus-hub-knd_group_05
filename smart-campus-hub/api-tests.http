@@ -1,0 +1,149 @@
+@host = http://localhost:8080
+@token = eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiVVNFUiIsInN1YiI6InhhY2hpbnRoYTMwODFAZ21haWwuY29tIiwiaWF0IjoxNzcyODk1OTEwLCJleHAiOjE3NzI5ODIzMTB9.5IFpd0EnC2oLYfYkFiD25rYysDt9obnVP-S4Yqdg91s
+
+### ============================================================================
+### Ticket Controller Tests
+### ============================================================================
+
+### GET All Tickets
+GET {{host}}/api/tickets
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### GET Ticket by ID
+GET {{host}}/api/tickets/1
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### POST Create a Ticket (Multipart/FormData via HTTP Client can be tricky, here is a representation)
+POST {{host}}/api/tickets
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="ticket"; filename="blob"
+Content-Type: application/json
+
+{
+  "resourceId": 1,
+  "title": "Projector not working in Room A",
+  "description": "The projector screen won't turn on and the bulb seems dead."
+}
+--boundary--
+
+### PUT Update Ticket Status
+PUT {{host}}/api/tickets/1/status?status=IN_PROGRESS
+Authorization: Bearer {{token}}
+
+### PUT Resolve Ticket
+PUT {{host}}/api/tickets/1/resolve
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "resolutionNotes": "Replaced the bulb. Projector works now."
+}
+
+### ============================================================================
+### Booking Controller Tests
+### ============================================================================
+
+### GET All Bookings Check
+GET {{host}}/api/bookings
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### GET Bookings By User ID
+GET {{host}}/api/bookings/user/1
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### GET Booking By ID
+GET {{host}}/api/bookings/1
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### POST Create Booking
+POST {{host}}/api/bookings?userId=1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "resourceId": 2,
+  "startTime": "2026-03-08T10:00:00",
+  "endTime": "2026-03-08T12:00:00",
+  "purpose": "Weekly Team Meeting"
+}
+
+### PUT Update Booking Status
+PUT {{host}}/api/bookings/1/status?status=APPROVED
+Authorization: Bearer {{token}}
+
+### DELETE Cancel Booking
+DELETE {{host}}/api/bookings/1
+Authorization: Bearer {{token}}
+
+### ============================================================================
+### Resource Controller Tests
+### ============================================================================
+
+### GET All Resources
+GET {{host}}/api/resources
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### GET Filtering Resources (Example: type=MEETING_ROOM)
+GET {{host}}/api/resources?type=MEETING_ROOM
+Authorization: Bearer {{token}}
+
+### GET Resource By ID
+GET {{host}}/api/resources/1
+Authorization: Bearer {{token}}
+
+### POST Create Resource
+POST {{host}}/api/resources
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Conference Room A",
+  "type": "MEETING_ROOM",
+  "location": "Building 1, Floor 2",
+  "capacity": 20,
+  "description": "Large conference room with projector and whiteboard."
+}
+
+### PUT Update Resource
+PUT {{host}}/api/resources/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Conference Room A (Updated)",
+  "type": "MEETING_ROOM",
+  "location": "Building 1, Floor 2",
+  "capacity": 25,
+  "description": "Large conference room with new Apple TV.",
+  "status": "AVAILABLE"
+}
+
+### DELETE Delete Resource
+DELETE {{host}}/api/resources/1
+Authorization: Bearer {{token}}
+
+### ============================================================================
+### Notification Controller Tests
+### ============================================================================
+
+### GET My Notifications
+GET {{host}}/api/notifications?userId=1&unreadOnly=false
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### PUT Mark Notification as Read
+PUT {{host}}/api/notifications/1/read?userId=1
+Authorization: Bearer {{token}}
+
+### PUT Mark All Notifications as Read for User
+PUT {{host}}/api/notifications/read-all?userId=1
+Authorization: Bearer {{token}}
