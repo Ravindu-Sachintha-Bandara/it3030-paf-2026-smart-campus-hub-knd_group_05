@@ -13,6 +13,19 @@ const Tickets = () => {
     const [description, setDescription] = useState('');
     const [resourceId, setResourceId] = useState('');
     const [file, setFile] = useState(null);
+    const [resources, setResources] = useState([]);
+
+    useEffect(() => {
+        const fetchResources = async () => {
+            try {
+                const response = await api.get('/api/resources');
+                setResources(response.data);
+            } catch (err) {
+                console.error("Error fetching resources", err);
+            }
+        };
+        fetchResources();
+    }, []);
 
     const fetchTickets = async () => {
         if (!user) return;
@@ -66,6 +79,18 @@ const Tickets = () => {
         }
     };
 
+    const handleCancel = async (ticketId) => {
+        if (window.confirm('Are you sure you want to cancel this ticket?')) {
+            try {
+                await api.delete(`/api/tickets/${ticketId}`);
+                fetchTickets();
+            } catch (err) {
+                console.error('Error canceling ticket:', err);
+                alert('Error: ' + (err.response?.data?.message || err.response?.data?.error || err.message));
+            }
+        }
+    };
+
     const handleResolve = async (ticketId) => {
         const notes = window.prompt('Enter resolution notes:');
         if (!notes) {
@@ -93,8 +118,8 @@ const Tickets = () => {
             </header>
 
             {user?.role !== 'ADMIN' && (
-                <div className="card-container" style={{ marginBottom: '30px' }}>
-                    <h2 style={{ top: 0, marginTop: 0, fontSize: '1.2em', color: '#444' }}>Submit New Ticket</h2>
+                <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '30px', border: '1px solid #e9ecef' }}>
+                    <h2 style={{ top: 0, marginTop: 0, fontSize: '1.2em', color: '#444', marginBottom: '16px' }}>Submit a Ticket</h2>
                     <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '15px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '200px' }}>
                             <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Title</label>
@@ -109,25 +134,27 @@ const Tickets = () => {
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', flex: '2', minWidth: '300px' }}>
                             <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Description</label>
-                            <input
-                                type="text"
+                            <textarea
                                 required
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+                                style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc', resize: 'vertical', minHeight: '38px' }}
                                 placeholder="Detailed description"
                             />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '150px' }}>
-                            <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Resource ID</label>
-                            <input
-                                type="number"
+                            <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Resource</label>
+                            <select
                                 required
                                 value={resourceId}
                                 onChange={(e) => setResourceId(e.target.value)}
-                                style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
-                                placeholder="e.g. 1"
-                            />
+                                style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: 'white' }}
+                            >
+                                <option value="">Select Resource</option>
+                                {resources.map(res => (
+                                    <option key={res.id} value={res.id}>{res.name}</option>
+                                ))}
+                            </select>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '200px' }}>
                             <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Attachment (Optional)</label>
@@ -138,7 +165,7 @@ const Tickets = () => {
                             />
                         </div>
                         <div style={{ display: 'flex', alignItems: 'flex-end', height: '62px' }}>
-                            <button type="submit" className="btn-primary">
+                            <button type="submit" style={{ padding: '10px 20px', backgroundColor: 'var(--sliit-orange)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
                                 Submit Ticket
                             </button>
                         </div>
@@ -151,44 +178,60 @@ const Tickets = () => {
             {loading ? (
                 <p>Loading tickets...</p>
             ) : tickets.length > 0 ? (
-                <div className="card-container" style={{ overflow: 'x-auto' }}>
+                <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ backgroundColor: '#f8f9fa', textTransform: 'uppercase', fontSize: '13px', color: '#555', borderBottom: '2px solid #e9ecef' }}>
                                 <th style={{ padding: '15px', textAlign: 'left' }}>ID</th>
+                                {user?.role === 'ADMIN' && <th style={{ padding: '15px', textAlign: 'left' }}>Submitted By</th>}
                                 <th style={{ padding: '15px', textAlign: 'left' }}>Title</th>
-                                <th style={{ padding: '15px', textAlign: 'left', width: '40%' }}>Description</th>
+                                <th style={{ padding: '15px', textAlign: 'left', width: '30%' }}>Description</th>
+                                <th style={{ padding: '15px', textAlign: 'left' }}>Resource ID</th>
                                 <th style={{ padding: '15px', textAlign: 'left' }}>Status</th>
                                 <th style={{ padding: '15px', textAlign: 'center' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {tickets.map(ticket => (
-                                <tr key={ticket.id} style={{ borderBottom: '1px solid #e9ecef', hover: { backgroundColor: '#f8f9fa' } }}>
+                                <tr key={ticket.id} style={{ borderBottom: '1px solid #e9ecef', ':hover': { backgroundColor: '#f8f9fa' } }}>
                                     <td style={{ padding: '15px', color: '#333' }}>#{ticket.id}</td>
+                                    {user?.role === 'ADMIN' && <td style={{ padding: '15px', color: '#666' }}>User {ticket.userId}</td>}
                                     <td style={{ padding: '15px', fontWeight: 'bold' }}>{ticket.title}</td>
                                     <td style={{ padding: '15px', color: '#666', fontSize: '0.95em' }}>
                                         {ticket.description.length > 60
                                             ? ticket.description.substring(0, 60) + '...'
                                             : ticket.description}
                                     </td>
+                                    <td style={{ padding: '15px', fontWeight: 'bold' }}>Resource {ticket.resourceId}</td>
                                     <td style={{ padding: '15px' }}>
                                         <span style={{
                                             padding: '4px 10px', borderRadius: '20px', fontSize: '0.85em', fontWeight: 'bold',
-                                            backgroundColor: ticket.status === 'RESOLVED' ? '#e2e3e5' : ticket.status === 'IN_PROGRESS' ? '#cce5ff' : '#f8d7da',
-                                            color: ticket.status === 'RESOLVED' ? '#383d41' : ticket.status === 'IN_PROGRESS' ? '#004085' : '#721c24'
+                                            backgroundColor: ticket.status === 'RESOLVED' ? '#d4edda' : ticket.status === 'IN_PROGRESS' ? '#cce5ff' : '#fff3cd',
+                                            color: ticket.status === 'RESOLVED' ? '#155724' : ticket.status === 'IN_PROGRESS' ? '#004085' : '#856404'
                                         }}>
                                             {ticket.status}
                                         </span>
                                     </td>
                                     <td style={{ padding: '15px', textAlign: 'center' }}>
-                                        {ticket.status !== 'RESOLVED' && user?.role === 'ADMIN' && (
-                                            <button
-                                                onClick={() => handleResolve(ticket.id)}
-                                                className="btn-primary"
-                                                style={{ padding: '6px 12px', fontSize: '0.85em' }}>
-                                                Resolve
-                                            </button>
+                                        {user?.role === 'ADMIN' ? (
+                                            ticket.status !== 'RESOLVED' && (
+                                                <button
+                                                    onClick={() => handleResolve(ticket.id)}
+                                                    style={{ padding: '6px 12px', backgroundColor: 'transparent', color: '#28a745', border: '1px solid #28a745', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85em', fontWeight: 'bold' }}
+                                                    onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#28a745'; e.currentTarget.style.color = 'white'; }}
+                                                    onMouseOut={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#28a745'; }}
+                                                >
+                                                    Mark Resolved
+                                                </button>
+                                            )
+                                        ) : (
+                                            (ticket.status === 'OPEN' || ticket.status === 'PENDING') && (
+                                                <button
+                                                    onClick={() => handleCancel(ticket.id)}
+                                                    style={{ padding: '6px 12px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85em', fontWeight: 'bold' }}>
+                                                    Cancel
+                                                </button>
+                                            )
                                         )}
                                     </td>
                                 </tr>

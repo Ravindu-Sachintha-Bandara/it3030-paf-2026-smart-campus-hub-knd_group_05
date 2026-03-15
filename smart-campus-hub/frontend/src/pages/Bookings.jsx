@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 
+const timeOptions = (() => {
+    const options = [];
+    for (let i = 8; i <= 23; i++) {
+        for (let j = 0; j < 60; j += 30) {
+            if (i === 23 && j > 0) continue;
+            const hour = i.toString().padStart(2, '0');
+            const minute = j.toString().padStart(2, '0');
+            options.push(`${hour}:${minute}`);
+        }
+    }
+    return options;
+})();
+
 const Bookings = () => {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -26,8 +39,24 @@ const Bookings = () => {
     // Form state
     const [resourceId, setResourceId] = useState('');
     const [purpose, setPurpose] = useState('');
-    const [startTime, setStartTime] = useState('');
-    const [endTime, setEndTime] = useState('');
+    const [date, setDate] = useState('');
+    const [startTimeStr, setStartTimeStr] = useState('');
+    const [endTimeStr, setEndTimeStr] = useState('');
+    const [resources, setResources] = useState([]);
+    const [errorMessage, setErrorMessage] = useState(null);
+    const [statusFilter, setStatusFilter] = useState('ALL');
+
+    useEffect(() => {
+        const fetchResources = async () => {
+            try {
+                const response = await api.get('/api/resources');
+                setResources(response.data);
+            } catch (err) {
+                console.error("Error fetching resources", err);
+            }
+        };
+        fetchResources();
+    }, []);
 
     const fetchBookings = async () => {
         if (!loggedInUser) return;
@@ -54,24 +83,29 @@ const Bookings = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrorMessage(null); // Clear previous errors
         try {
+            const startDateTime = `${date}T${startTimeStr}:00`;
+            const endDateTime = `${date}T${endTimeStr}:00`;
             const userId = loggedInUser ? loggedInUser.id : 1;
             await api.post(`/api/bookings?userId=${userId}`, {
                 resourceId: parseInt(resourceId, 10),
                 purpose,
-                startTime,
-                endTime
+                startTime: startDateTime,
+                endTime: endDateTime
             });
             // Clear form
             setResourceId('');
             setPurpose('');
-            setStartTime('');
-            setEndTime('');
+            setDate('');
+            setStartTimeStr('');
+            setEndTimeStr('');
             // Refresh table
             fetchBookings();
         } catch (err) {
             console.error('Error creating booking:', err);
-            alert('Error: ' + (err.response?.data?.message || err.response?.data?.error || err.message));
+            const msg = err.response?.data?.message || err.response?.data?.error || err.message || 'An error occurred while creating your booking.';
+            setErrorMessage(msg);
         }
     };
 
@@ -126,19 +160,30 @@ const Bookings = () => {
             </header>
 
             {/* Create Booking Form */}
+            {loggedInUser?.role !== 'ADMIN' && (
             <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '30px', border: '1px solid #e9ecef' }}>
-                <h2 style={{ top: 0, marginTop: 0, fontSize: '1.2em', color: '#444' }}>Create Booking</h2>
+                <h2 style={{ top: 0, marginTop: 0, fontSize: '1.2em', color: '#444', marginBottom: '16px' }}>Create Booking</h2>
+                
+                {errorMessage && (
+                    <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontWeight: '500', fontSize: '0.95rem' }}>
+                        {errorMessage}
+                    </div>
+                )}
+                
                 <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '15px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '150px' }}>
-                        <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Resource ID</label>
-                        <input
-                            type="number"
+                        <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Resource</label>
+                        <select
                             required
                             value={resourceId}
-                            onChange={(e) => setResourceId(e.target.value)}
-                            style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
-                            placeholder="e.g. 5"
-                        />
+                            onChange={(e) => { setResourceId(e.target.value); setErrorMessage(null); }}
+                            style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: 'white' }}
+                        >
+                            <option value="">Select Resource</option>
+                            {resources.map(res => (
+                                <option key={res.id} value={res.id}>{res.name}</option>
+                            ))}
+                        </select>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', flex: '2', minWidth: '200px' }}>
                         <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Purpose</label>
@@ -151,25 +196,39 @@ const Bookings = () => {
                             placeholder="Meeting purpose"
                         />
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '180px' }}>
-                        <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Start Time</label>
+                    <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '150px' }}>
+                        <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Date</label>
                         <input
-                            type="datetime-local"
+                            type="date"
                             required
-                            value={startTime}
-                            onChange={(e) => setStartTime(e.target.value)}
-                            style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+                            value={date}
+                            onChange={(e) => { setDate(e.target.value); setErrorMessage(null); }}
+                            style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc', color: 'var(--sliit-navy)' }}
                         />
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '180px' }}>
-                        <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>End Time</label>
-                        <input
-                            type="datetime-local"
+                    <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '120px' }}>
+                        <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Start Time</label>
+                        <select
                             required
-                            value={endTime}
-                            onChange={(e) => setEndTime(e.target.value)}
-                            style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
-                        />
+                            value={startTimeStr}
+                            onChange={(e) => { setStartTimeStr(e.target.value); setErrorMessage(null); }}
+                            style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc', color: 'var(--sliit-navy)', backgroundColor: 'white' }}
+                        >
+                            <option value="">Select Time</option>
+                            {timeOptions.map(time => <option key={time} value={time}>{time}</option>)}
+                        </select>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '120px' }}>
+                        <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>End Time</label>
+                        <select
+                            required
+                            value={endTimeStr}
+                            onChange={(e) => { setEndTimeStr(e.target.value); setErrorMessage(null); }}
+                            style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc', color: 'var(--sliit-navy)', backgroundColor: 'white' }}
+                        >
+                            <option value="">Select Time</option>
+                            {timeOptions.map(time => <option key={time} value={time}>{time}</option>)}
+                        </select>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'flex-end', height: '62px' }}>
                         <button type="submit" style={{ padding: '10px 20px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
@@ -178,8 +237,27 @@ const Bookings = () => {
                     </div>
                 </form>
             </div>
+            )}
 
             {error && <div style={{ padding: '15px', backgroundColor: '#f8d7da', color: '#721c24', marginBottom: '20px', borderRadius: '4px' }}>{error}</div>}
+
+            {/* Admin Filter Row */}
+            {loggedInUser?.role === 'ADMIN' && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px', alignItems: 'center', gap: '10px' }}>
+                    <label style={{ fontSize: '14px', color: '#555', fontWeight: '500' }}>Filter by Status:</label>
+                    <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #ccc', color: 'var(--sliit-navy)', backgroundColor: 'white', fontSize: '0.9rem', outline: 'none' }}
+                    >
+                        <option value="ALL">All</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="APPROVED">Approved</option>
+                        <option value="REJECTED">Rejected</option>
+                        <option value="CANCELLED">Cancelled</option>
+                    </select>
+                </div>
+            )}
 
             {loading ? (
                 <p>Loading bookings...</p>
@@ -197,7 +275,9 @@ const Bookings = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {bookings.map(booking => (
+                            {bookings
+                                .filter(b => statusFilter === 'ALL' || b.status.toUpperCase() === statusFilter)
+                                .map(booking => (
                                 <tr key={booking.id} style={{ borderBottom: '1px solid #e9ecef', ':hover': { backgroundColor: '#f8f9fa' } }}>
                                     <td style={{ padding: '15px', color: '#333' }}>#{booking.id}</td>
                                     <td style={{ padding: '15px', fontWeight: 'bold' }}>Resource {booking.resourceId}</td>

@@ -4,10 +4,8 @@ import OAuth2RedirectHandler from './components/OAuth2RedirectHandler';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminBookings from './pages/admin/AdminBookings';
-import AdminTickets from './pages/admin/AdminTickets';
 import UserDashboard from './pages/user/UserDashboard';
-import UserBookings from './pages/user/UserBookings';
+import Bookings from './pages/Bookings';
 import Resources from './pages/Resources';
 import Tickets from './pages/Tickets';
 import Notifications from './pages/Notifications';
@@ -30,15 +28,13 @@ function App() {
 
             {/* Admin Routes */}
             <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-            <Route path="/admin/bookings" element={<AdminRoute><AdminBookings /></AdminRoute>} />
-            <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
 
             {/* User Routes */}
             <Route path="/user/dashboard" element={<UserRoute><UserDashboard /></UserRoute>} />
-            <Route path="/user/bookings" element={<UserRoute><UserBookings /></UserRoute>} />
-            <Route path="/user/tickets" element={<UserRoute><Tickets /></UserRoute>} />
 
             {/* Common Protected Routes */}
+            <Route path="/bookings" element={<UserRoute><Bookings /></UserRoute>} />
+            <Route path="/tickets" element={<UserRoute><Tickets /></UserRoute>} />
             <Route path="/resources" element={<UserRoute><Resources /></UserRoute>} />
             <Route path="/notifications" element={<UserRoute><Notifications /></UserRoute>} />
           </Route>

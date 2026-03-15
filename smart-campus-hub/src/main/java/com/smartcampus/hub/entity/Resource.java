@@ -44,7 +44,10 @@ public class Resource {
         LECTURE_HALL,
         LABORATORY,
         EQUIPMENT,
-        MEETING_ROOM
+        MEETING_ROOM,
+        ROOM,
+        OUTDOOR,
+        OTHER
     }
 
     public enum ResourceStatus {

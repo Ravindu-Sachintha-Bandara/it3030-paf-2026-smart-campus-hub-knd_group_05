@@ -18,21 +18,19 @@ const Layout = () => {
     };
 
     const commonItems = [
+        { path: '/bookings', label: 'Bookings' },
+        { path: '/tickets', label: 'Tickets' },
         { path: '/resources', label: 'Resources' },
         { path: '/notifications', label: 'Notifications' }
     ];
 
     const adminItems = [
         { path: '/admin/dashboard', label: 'Admin Dashboard' },
-        { path: '/admin/bookings', label: 'Manage Bookings' },
-        { path: '/admin/tickets', label: 'Manage Tickets' },
         ...commonItems
     ];
 
     const userItems = [
         { path: '/user/dashboard', label: 'Dashboard' },
-        { path: '/user/bookings', label: 'Bookings' },
-        { path: '/user/tickets', label: 'Tickets' },
         ...commonItems
     ];
 
