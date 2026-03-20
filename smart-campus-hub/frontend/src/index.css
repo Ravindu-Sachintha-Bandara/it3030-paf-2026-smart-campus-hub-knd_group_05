@@ -9,11 +9,17 @@
   --sliit-light-bg: #EEF0F8;
   --sliit-gray: #6B7280;
   --white: #FFFFFF;
+  
+  /* New Academic Architect Theme Variables */
+  --bg-main: #F4F7FE;
+  --sidebar-bg: #0B1437;
+  --accent-orange: #E85D04;
+  --text-sidebar: #A3AED0;
 }
 
 body {
   font-family: 'Inter', sans-serif;
-  background-color: var(--sliit-light-bg);
+  background-color: var(--bg-main);
   color: var(--sliit-dark-navy);
   margin: 0;
   padding: 0;

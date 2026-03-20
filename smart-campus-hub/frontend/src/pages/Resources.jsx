@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { Monitor, Camera, Presentation, Dumbbell, DoorOpen, Box, Building } from 'lucide-react';
 
 const Resources = () => {
     const { user } = useAuth();
@@ -19,6 +20,11 @@ const Resources = () => {
     // Search and Filter State
     const [searchQuery, setSearchQuery] = useState('');
     const [filterType, setFilterType] = useState('All');
+    const [filterCapacity, setFilterCapacity] = useState('Any');
+    const [filterLocation, setFilterLocation] = useState('All');
+    const [filterStatus, setFilterStatus] = useState('Any');
+
+    const [showAddForm, setShowAddForm] = useState(false);
 
     const fetchResources = async () => {
         try {
@@ -83,6 +89,7 @@ const Resources = () => {
         setLocation(resource.location);
         setCapacity(resource.capacity.toString());
         setEditingId(resource.id);
+        setShowAddForm(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
@@ -148,32 +155,72 @@ const Resources = () => {
         );
     };
 
+    const getResourceIcon = (name, type) => {
+        const lowerName = name?.toLowerCase() || '';
+        
+        if (lowerName.includes('pc') || lowerName.includes('computer') || lowerName.includes('laptop')) {
+            return <Monitor color="white" size={64} />;
+        }
+        if (lowerName.includes('camera')) {
+            return <Camera color="white" size={64} />;
+        }
+        if (lowerName.includes('projector') || lowerName.includes('presentation')) {
+            return <Presentation color="white" size={64} />;
+        }
+        if (lowerName.includes('tennis') || lowerName.includes('sport') || lowerName.includes('gym')) {
+            return <Dumbbell color="white" size={64} />;
+        }
+        
+        if (type === 'ROOM' || type === 'MEETING_ROOM') return <DoorOpen color="white" size={64} />;
+        if (type === 'EQUIPMENT') return <Box color="white" size={64} />;
+        return <Building color="white" size={64} />;
+    };
+
+    const uniqueLocations = React.useMemo(() => {
+        const locs = resources.map(r => r.location).filter(Boolean);
+        return [...new Set(locs)].sort();
+    }, [resources]);
+
     const filteredResources = React.useMemo(() => {
         return resources.filter(resource => {
             const matchesSearch = resource.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 resource.location?.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesType = filterType === 'All' || resource.type === filterType;
-            return matchesSearch && matchesType;
+            const matchesLocation = filterLocation === 'All' || resource.location?.toLowerCase().includes(filterLocation.toLowerCase());
+            const matchesStatus = filterStatus === 'Any' || resource.status === filterStatus;
+            
+            let matchesCapacity = true;
+            if (filterCapacity !== 'Any') {
+                if (filterCapacity === '1-50') matchesCapacity = resource.capacity <= 50;
+                else if (filterCapacity === '51-200') matchesCapacity = resource.capacity > 50 && resource.capacity <= 200;
+                else if (filterCapacity === '200+') matchesCapacity = resource.capacity > 200;
+            }
+
+            return matchesSearch && matchesType && matchesLocation && matchesStatus && matchesCapacity;
         });
-    }, [resources, searchQuery, filterType]);
+    }, [resources, searchQuery, filterType, filterLocation, filterStatus, filterCapacity]);
 
     return (
-        <div style={{ padding: '24px' }}>
-            <header style={{ marginBottom: '30px', borderBottom: '1px solid #eee', paddingBottom: '15px' }}>
-                <h1 style={{ margin: 0, color: 'var(--sliit-dark-navy)' }}>Facilities & Assets Catalogue</h1>
-                <p style={{ color: 'var(--sliit-gray)', marginTop: '5px' }}>Browse available campus facilities and equipment.</p>
+        <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
+            <header style={{ marginBottom: '30px', borderBottom: '1px solid #e5e7eb', paddingBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                <div>
+                    <h1 style={{ margin: 0, color: 'var(--sliit-dark-navy)' }}>Facilities & Assets</h1>
+                    <p style={{ color: 'var(--sliit-gray)', flex: 1, marginTop: '5px' }}>Browse and manage premium campus resources.</p>
+                </div>
+                {isAdmin && (
+                    <button 
+                        onClick={() => setShowAddForm(!showAddForm)}
+                        style={{ padding: '10px 20px', backgroundColor: 'var(--sliit-orange)', color: 'white', borderRadius: '8px', border: 'none', fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 4px rgba(249, 115, 22, 0.2)' }}
+                    >
+                        {showAddForm ? 'Close Form' : '+ Add Resource'}
+                    </button>
+                )}
             </header>
 
             {error && <div style={{ padding: '15px', backgroundColor: '#fce8e6', color: '#d93025', marginBottom: '20px', borderRadius: '4px' }}>{error}</div>}
 
-            {isAdmin && (
-                <div style={{
-                    background: 'var(--white)',
-                    padding: '24px',
-                    borderRadius: '12px',
-                    boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
-                    marginBottom: '30px'
-                }}>
+            {isAdmin && showAddForm && (
+                <div style={{ background: 'var(--white)', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', marginBottom: '30px', border: '1px solid #f3f4f6' }}>
                     <h2 style={{ marginTop: 0, fontSize: '1.2em', color: 'var(--sliit-dark-navy)', marginBottom: '20px' }}>
                         {editingId ? 'Edit Resource' : 'Add New Resource'}
                     </h2>
@@ -226,21 +273,11 @@ const Resources = () => {
                             />
                         </div>
                         <div style={{ display: 'flex', gap: '10px' }}>
-                            <button type="submit" className="btn-primary" style={{ padding: '11px 20px', height: '42px', whiteSpace: 'nowrap' }}>
+                            <button type="submit" className="btn-primary" style={{ padding: '11px 20px', height: '42px', whiteSpace: 'nowrap', borderRadius: '6px' }}>
                                 {editingId ? 'Save Changes' : 'Add Resource'}
                             </button>
                             {editingId && (
-                                <button type="button" onClick={resetForm} style={{
-                                    padding: '11px 20px',
-                                    height: '42px',
-                                    whiteSpace: 'nowrap',
-                                    backgroundColor: 'transparent',
-                                    color: 'var(--sliit-gray)',
-                                    border: '1px solid #ddd',
-                                    borderRadius: '6px',
-                                    cursor: 'pointer',
-                                    fontWeight: 'bold'
-                                }}>
+                                <button type="button" onClick={resetForm} style={{ padding: '11px 20px', height: '42px', whiteSpace: 'nowrap', backgroundColor: 'transparent', color: 'var(--sliit-gray)', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
                                     Cancel
                                 </button>
                             )}
@@ -249,143 +286,106 @@ const Resources = () => {
                 </div>
             )}
 
-            <div style={{ display: 'flex', gap: '15px', marginBottom: '20px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap' }}>
                 <input
                     type="text"
-                    placeholder="Search resources by name or location..."
+                    placeholder="Search resources by name..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{
-                        flex: '1',
-                        padding: '12px 16px',
-                        borderRadius: '8px',
-                        border: '1px solid #e5e7eb',
-                        fontSize: '14px',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
-                    }}
+                    style={{ flex: '1', minWidth: '200px', padding: '10px 14px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '14px', color: '#4b5563' }}
                 />
-                <select
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                    style={{
-                        padding: '12px 16px',
-                        borderRadius: '8px',
-                        border: '1px solid #e5e7eb',
-                        fontSize: '14px',
-                        backgroundColor: 'white',
-                        minWidth: '150px',
-                        cursor: 'pointer',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
-                    }}
-                >
-                    <option value="All">All Types</option>
+                <select value={filterType} onChange={(e) => setFilterType(e.target.value)} style={{ padding: '10px 14px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '14px', color: '#4b5563', backgroundColor: 'white' }}>
+                    <option value="All">TYPE: All</option>
                     <option value="ROOM">ROOM</option>
                     <option value="EQUIPMENT">EQUIPMENT</option>
                     <option value="OUTDOOR">OUTDOOR</option>
                     <option value="OTHER">OTHER</option>
                 </select>
+                <select value={filterCapacity} onChange={(e) => setFilterCapacity(e.target.value)} style={{ padding: '10px 14px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '14px', color: '#4b5563', backgroundColor: 'white' }}>
+                    <option value="Any">CAPACITY: Any</option>
+                    <option value="1-50">1 - 50</option>
+                    <option value="51-200">51 - 200</option>
+                    <option value="200+">200+</option>
+                </select>
+                <select value={filterLocation} onChange={(e) => setFilterLocation(e.target.value)} style={{ padding: '10px 14px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '14px', color: '#4b5563', backgroundColor: 'white' }}>
+                    <option value="All">LOCATION: All</option>
+                    {uniqueLocations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+                </select>
+                <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} style={{ padding: '10px 14px', borderRadius: '6px', border: '1px solid #e5e7eb', fontSize: '14px', color: '#4b5563', backgroundColor: 'white' }}>
+                    <option value="Any">STATUS: Any</option>
+                    <option value="AVAILABLE">Available</option>
+                    <option value="MAINTENANCE">Maintenance</option>
+                </select>
             </div>
 
-            <div style={{
-                background: 'var(--white)',
-                padding: '24px',
-                borderRadius: '12px',
-                boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
-            }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                    <h2 style={{ margin: 0, fontSize: '1.2em', color: 'var(--sliit-dark-navy)' }}>Master Inventory</h2>
-                    <span style={{ fontSize: '0.9rem', color: 'var(--sliit-gray)' }}>Showing {filteredResources.length} items</span>
-                </div>
-
-                {loading ? (
-                    <p style={{ color: 'var(--sliit-gray)' }}>Loading resources...</p>
-                ) : filteredResources.length > 0 ? (
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                            <thead>
-                                <tr>
-                                    <th style={{ color: 'var(--sliit-gray)', borderBottom: '2px solid var(--sliit-light-bg)', paddingBottom: '12px', paddingRight: '15px' }}>ID</th>
-                                    <th style={{ color: 'var(--sliit-gray)', borderBottom: '2px solid var(--sliit-light-bg)', paddingBottom: '12px', paddingRight: '15px' }}>Name</th>
-                                    <th style={{ color: 'var(--sliit-gray)', borderBottom: '2px solid var(--sliit-light-bg)', paddingBottom: '12px', paddingRight: '15px' }}>Type</th>
-                                    <th style={{ color: 'var(--sliit-gray)', borderBottom: '2px solid var(--sliit-light-bg)', paddingBottom: '12px', paddingRight: '15px' }}>Location</th>
-                                    <th style={{ color: 'var(--sliit-gray)', borderBottom: '2px solid var(--sliit-light-bg)', paddingBottom: '12px', paddingRight: '15px' }}>Capacity</th>
-                                    <th style={{ color: 'var(--sliit-gray)', borderBottom: '2px solid var(--sliit-light-bg)', paddingBottom: '12px', paddingRight: '15px' }}>Status</th>
+            {loading ? (
+                <p style={{ color: 'var(--sliit-gray)' }}>Loading resources...</p>
+            ) : filteredResources.length > 0 ? (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
+                    {filteredResources.map(resource => (
+                        <div key={resource.id} style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', border: '1px solid #f3f4f6', transition: 'transform 0.2s', display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ position: 'relative', height: '160px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--sidebar-bg)' }}>
+                                {getResourceIcon(resource.name, resource.type)}
+                                <span style={{ position: 'absolute', top: '12px', left: '12px', background: 'var(--sliit-orange)', color: 'white', padding: '4px 10px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 'bold', zIndex: 2 }}>
+                                    {resource.type}
+                                </span>
+                            </div>
+                            
+                            <div style={{ padding: '20px', flex: '1', display: 'flex', flexDirection: 'column' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                                    <h3 style={{ margin: 0, fontWeight: 600, color: 'var(--sliit-navy)', fontSize: '1.2rem', lineHeight: '1.3' }}>{resource.name}</h3>
+                                    {renderStatusBadge(resource.status)}
+                                </div>
+                                
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280', fontSize: '0.9rem' }}>
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                                        Capacity: {resource.capacity}
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#6b7280', fontSize: '0.9rem' }}>
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                        {resource.location}
+                                    </div>
+                                </div>
+                                
+                                <div style={{ marginTop: 'auto', paddingTop: isAdmin ? '16px' : '0', borderTop: isAdmin ? '1px solid #f3f4f6' : 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    {isAdmin && <span style={{ color: 'var(--sliit-navy)', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer' }}>Details &rarr;</span>}
+                                    
                                     {isAdmin && (
-                                        <th style={{ color: 'var(--sliit-gray)', borderBottom: '2px solid var(--sliit-light-bg)', paddingBottom: '12px', textAlign: 'center' }}>Actions</th>
+                                        <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
+                                            <button 
+                                                title="Toggle Status"
+                                                onClick={() => handleToggleStatus(resource)} 
+                                                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#6b7280', padding: '4px' }}
+                                            >
+                                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                                            </button>
+                                            <button 
+                                                title="Edit"
+                                                onClick={() => handleEditClick(resource)} 
+                                                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#6b7280', padding: '4px' }}
+                                            >
+                                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                            </button>
+                                            <button 
+                                                title="Delete"
+                                                onClick={() => handleDelete(resource.id)} 
+                                                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#ef4444', padding: '4px' }}
+                                            >
+                                                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                            </button>
+                                        </div>
                                     )}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredResources.map(resource => (
-                                    <tr key={resource.id} style={{ borderBottom: '1px solid var(--sliit-light-bg)' }}>
-                                        <td style={{ padding: '16px 15px 16px 0', color: 'var(--sliit-dark-navy)', fontWeight: '500' }}>#{resource.id}</td>
-                                        <td style={{ padding: '16px 15px 16px 0', fontWeight: '500' }}>{resource.name}</td>
-                                        <td style={{ padding: '16px 15px 16px 0', color: 'var(--sliit-gray)' }}>{resource.type}</td>
-                                        <td style={{ padding: '16px 15px 16px 0', color: 'var(--sliit-gray)' }}>{resource.location}</td>
-                                        <td style={{ padding: '16px 15px 16px 0' }}>{resource.capacity}</td>
-                                        <td style={{ padding: '16px 15px 16px 0' }}>{renderStatusBadge(resource.status)}</td>
-                                        {isAdmin && (
-                                            <td style={{ padding: '16px 0', textAlign: 'center' }}>
-                                                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                                                    <button
-                                                        onClick={() => handleToggleStatus(resource)}
-                                                        style={{
-                                                            padding: '6px 16px',
-                                                            fontSize: '0.85rem',
-                                                            fontWeight: '600',
-                                                            color: 'var(--sliit-gray)',
-                                                            backgroundColor: 'transparent',
-                                                            border: '1px solid #ddd',
-                                                            borderRadius: '6px',
-                                                            cursor: 'pointer'
-                                                        }}
-                                                    >
-                                                        Toggle Status
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleEditClick(resource)}
-                                                        style={{
-                                                            padding: '6px 16px',
-                                                            fontSize: '0.85rem',
-                                                            fontWeight: '600',
-                                                            color: 'var(--sliit-navy)',
-                                                            backgroundColor: 'transparent',
-                                                            border: '1px solid var(--sliit-navy)',
-                                                            borderRadius: '6px',
-                                                            cursor: 'pointer'
-                                                        }}
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete(resource.id)}
-                                                        style={{
-                                                            padding: '6px 16px',
-                                                            fontSize: '0.85rem',
-                                                            fontWeight: '600',
-                                                            color: '#d93025',
-                                                            backgroundColor: 'transparent',
-                                                            border: '1px solid #d93025',
-                                                            borderRadius: '6px',
-                                                            cursor: 'pointer'
-                                                        }}
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        )}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                ) : (
-                    <div style={{ textAlign: 'center', color: 'var(--sliit-gray)', padding: '20px' }}>
-                        <p>No resources match your search criteria.</p>
-                    </div>
-                )}
-            </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div style={{ textAlign: 'center', color: 'var(--sliit-gray)', padding: '40px', background: 'white', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+                    <p style={{ margin: 0, fontSize: '1.1rem' }}>No resources match your search criteria.</p>
+                </div>
+            )}
         </div>
     );
 };

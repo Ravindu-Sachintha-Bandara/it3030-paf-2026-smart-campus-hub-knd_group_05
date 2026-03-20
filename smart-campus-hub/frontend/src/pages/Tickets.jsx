@@ -11,9 +11,11 @@ const Tickets = () => {
     // Form state
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [category, setCategory] = useState('');
     const [resourceId, setResourceId] = useState('');
     const [file, setFile] = useState(null);
     const [resources, setResources] = useState([]);
+    const [resolveModal, setResolveModal] = useState({ isOpen: false, ticketId: null, note: '' });
 
     useEffect(() => {
         const fetchResources = async () => {
@@ -49,11 +51,13 @@ const Tickets = () => {
         e.preventDefault();
         try {
             const formData = new FormData();
-            const ticketBlob = new Blob([JSON.stringify({
-                title,
-                description,
-                resourceId: parseInt(resourceId, 10)
-            })], { type: 'application/json' });
+            const payload = { title, description, category };
+            if (resourceId && resourceId !== 'None') {
+                payload.resourceId = parseInt(resourceId, 10);
+            } else {
+                payload.resourceId = null;
+            }
+            const ticketBlob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
 
             formData.append('ticket', ticketBlob);
             if (file) {
@@ -69,6 +73,7 @@ const Tickets = () => {
             // Clear form
             setTitle('');
             setDescription('');
+            setCategory('');
             setResourceId('');
             setFile(null);
             // Refresh table
@@ -91,18 +96,23 @@ const Tickets = () => {
         }
     };
 
-    const handleResolve = async (ticketId) => {
-        const notes = window.prompt('Enter resolution notes:');
-        if (!notes) {
+    const handleResolve = (ticketId) => {
+        setResolveModal({ isOpen: true, ticketId: ticketId, note: '' });
+    };
+
+    const handleConfirmResolve = async () => {
+        const { ticketId, note } = resolveModal;
+        if (note.trim() === '') {
             alert("Notes are required to resolve a ticket.");
             return;
         }
         try {
             await api.put(`/api/tickets/${ticketId}/resolve`,
-                { resolutionNotes: notes },
+                { status: 'RESOLVED', resolutionNotes: note },
                 { headers: { 'Content-Type': 'application/json' } }
             );
-            window.location.reload(); // Force page refresh on success
+            setResolveModal({ isOpen: false, ticketId: null, note: '' });
+            fetchTickets(); 
         } catch (error) {
             alert('Error: ' + (error.response?.data?.message || 'Failed to resolve ticket. Check console.'));
             console.error("Resolve error details:", error.response || error);
@@ -143,19 +153,37 @@ const Tickets = () => {
                             />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '150px' }}>
-                            <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Resource</label>
+                            <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Category</label>
                             <select
                                 required
-                                value={resourceId}
-                                onChange={(e) => setResourceId(e.target.value)}
+                                value={category}
+                                onChange={(e) => { setCategory(e.target.value); setResourceId(''); }}
                                 style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: 'white' }}
                             >
-                                <option value="">Select Resource</option>
-                                {resources.map(res => (
-                                    <option key={res.id} value={res.id}>{res.name}</option>
-                                ))}
+                                <option value="">Select Category</option>
+                                <option value="Facilities">Facilities</option>
+                                <option value="IT & Equipment">IT & Equipment</option>
+                                <option value="Academic & Exams">Academic & Exams</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Student Services">Student Services</option>
+                                <option value="Other">Other</option>
                             </select>
                         </div>
+                        {(category === 'Facilities' || category === 'IT & Equipment') && (
+                            <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '150px' }}>
+                                <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Resource</label>
+                                <select
+                                    value={resourceId}
+                                    onChange={(e) => setResourceId(e.target.value)}
+                                    style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: 'white' }}
+                                >
+                                    <option value="">None / Not Applicable</option>
+                                    {resources.map(res => (
+                                        <option key={res.id} value={res.id}>{res.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
                         <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '200px' }}>
                             <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Attachment (Optional)</label>
                             <input
@@ -185,9 +213,11 @@ const Tickets = () => {
                                 <th style={{ padding: '15px', textAlign: 'left' }}>ID</th>
                                 {user?.role === 'ADMIN' && <th style={{ padding: '15px', textAlign: 'left' }}>Submitted By</th>}
                                 <th style={{ padding: '15px', textAlign: 'left' }}>Title</th>
+                                <th style={{ padding: '15px', textAlign: 'left' }}>Category</th>
                                 <th style={{ padding: '15px', textAlign: 'left', width: '30%' }}>Description</th>
                                 <th style={{ padding: '15px', textAlign: 'left' }}>Resource ID</th>
                                 <th style={{ padding: '15px', textAlign: 'left' }}>Status</th>
+                                <th style={{ padding: '15px', textAlign: 'left' }}>Resolution</th>
                                 <th style={{ padding: '15px', textAlign: 'center' }}>Actions</th>
                             </tr>
                         </thead>
@@ -197,12 +227,13 @@ const Tickets = () => {
                                     <td style={{ padding: '15px', color: '#333' }}>#{ticket.id}</td>
                                     {user?.role === 'ADMIN' && <td style={{ padding: '15px', color: '#666' }}>User {ticket.userId}</td>}
                                     <td style={{ padding: '15px', fontWeight: 'bold' }}>{ticket.title}</td>
+                                    <td style={{ padding: '15px', fontWeight: 'bold', color: '#0056b3' }}>{ticket.category || 'N/A'}</td>
                                     <td style={{ padding: '15px', color: '#666', fontSize: '0.95em' }}>
                                         {ticket.description.length > 60
                                             ? ticket.description.substring(0, 60) + '...'
                                             : ticket.description}
                                     </td>
-                                    <td style={{ padding: '15px', fontWeight: 'bold' }}>Resource {ticket.resourceId}</td>
+                                    <td style={{ padding: '15px', fontWeight: 'bold' }}>{ticket.resourceId ? `Resource ${ticket.resourceId}` : 'N/A'}</td>
                                     <td style={{ padding: '15px' }}>
                                         <span style={{
                                             padding: '4px 10px', borderRadius: '20px', fontSize: '0.85em', fontWeight: 'bold',
@@ -211,6 +242,15 @@ const Tickets = () => {
                                         }}>
                                             {ticket.status}
                                         </span>
+                                    </td>
+                                    <td style={{ padding: '15px' }}>
+                                        {ticket.resolutionNotes ? (
+                                            <span style={{ color: '#64748B', fontSize: '0.85rem', fontStyle: 'italic' }}>
+                                                {ticket.resolutionNotes}
+                                            </span>
+                                        ) : (
+                                            '-'
+                                        )}
                                     </td>
                                     <td style={{ padding: '15px', textAlign: 'center' }}>
                                         {user?.role === 'ADMIN' ? (
@@ -242,6 +282,32 @@ const Tickets = () => {
             ) : (
                 <div style={{ padding: '40px', textAlign: 'center', backgroundColor: 'white', borderRadius: '8px', color: '#666' }}>
                     <p>No tickets found.</p>
+                </div>
+            )}
+
+            {resolveModal.isOpen && (
+                <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+                    <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', width: '100%', maxWidth: '400px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }}>
+                        <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '16px', color: 'var(--sliit-navy)', marginTop: 0 }}>Resolve Ticket</h3>
+                        <textarea
+                            value={resolveModal.note}
+                            onChange={(e) => setResolveModal({ ...resolveModal, note: e.target.value })}
+                            placeholder="Enter resolution notes (how was this fixed?)..."
+                            style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc', minHeight: '80px', marginBottom: '15px', resize: 'vertical' }}
+                        />
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                            <button
+                                onClick={() => setResolveModal({ isOpen: false, ticketId: null, note: '' })}
+                                style={{ padding: '8px 16px', backgroundColor: '#e2e8f0', color: '#475569', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleConfirmResolve}
+                                style={{ padding: '8px 16px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                                Confirm Resolution
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

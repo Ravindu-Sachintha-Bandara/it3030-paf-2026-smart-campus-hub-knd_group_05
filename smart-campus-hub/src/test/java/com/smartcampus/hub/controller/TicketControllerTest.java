@@ -59,10 +59,11 @@ public class TicketControllerTest {
         sampleResponse.setTitle("Fix AC in Room 101");
         sampleResponse.setDescription("The AC is leaking water.");
         sampleResponse.setStatus(Ticket.TicketStatus.OPEN);
-        sampleResponse.setCategory(Ticket.TicketCategory.HVAC);
+        sampleResponse.setCategory("Facilities");
 
         sampleRequest = new TicketRequestDTO();
         sampleRequest.setResourceId(2L);
+        sampleRequest.setCategory("Facilities");
         sampleRequest.setTitle("Fix AC in Room 101");
         sampleRequest.setDescription("The AC is leaking water.");
     }

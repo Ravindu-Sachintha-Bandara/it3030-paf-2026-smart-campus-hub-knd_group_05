@@ -13,7 +13,7 @@ public class TicketResponseDTO {
     private String title;
     private String description;
     private Ticket.TicketStatus status;
-    private Ticket.TicketCategory category;
+    private String category;
     private String resolutionNotes;
     private List<String> imageUrls;
 }

@@ -57,8 +57,11 @@ public class TicketService {
     @Transactional
     public TicketResponseDTO createTicket(Long userId, TicketRequestDTO requestDTO, MultipartFile[] images) {
 
-        Resource resource = resourceRepository.findById(requestDTO.getResourceId())
-                .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
+        Resource resource = null;
+        if (requestDTO.getResourceId() != null) {
+            resource = resourceRepository.findById(requestDTO.getResourceId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
+        }
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -75,20 +78,24 @@ public class TicketService {
         ticket.setDescription(requestDTO.getDescription());
         ticket.setStatus(Ticket.TicketStatus.OPEN);
 
-        // Use Gemini AI to auto-categorize the text
-        Ticket.TicketCategory aiCategory = geminiService.categorizeTicketDescription(
-                requestDTO.getTitle(),
-                requestDTO.getDescription());
-        ticket.setCategory(aiCategory);
+        String category = requestDTO.getCategory();
+        if (category == null || category.trim().isEmpty() || category.equals("Select Category")) {
+            // Use Gemini AI as fallback if no category is provided
+            category = geminiService.categorizeTicketDescription(
+                    requestDTO.getTitle(),
+                    requestDTO.getDescription());
+        }
+        ticket.setCategory(category);
 
         List<String> savedImageUrls = saveUploadedFiles(images);
         ticket.setImageUrls(savedImageUrls);
 
         Ticket savedTicket = ticketRepository.save(ticket);
 
+        String resourceText = resource != null ? " regarding " + resource.getName() : "";
         notificationService.createNotification(
                 user.getId(),
-                "Ticket #" + savedTicket.getId() + " regarding " + resource.getName() + " has been created.",
+                "Ticket #" + savedTicket.getId() + resourceText + " has been created.",
                 savedTicket.getId(),
                 com.smartcampus.hub.entity.Notification.RelatedEntityType.TICKET);
 
@@ -184,7 +191,9 @@ public class TicketService {
     private TicketResponseDTO mapToDTO(Ticket ticket) {
         TicketResponseDTO dto = new TicketResponseDTO();
         dto.setId(ticket.getId());
-        dto.setResourceId(ticket.getResource().getId());
+        if (ticket.getResource() != null) {
+            dto.setResourceId(ticket.getResource().getId());
+        }
         dto.setReporterId(ticket.getReporter().getId());
         dto.setTitle(ticket.getTitle());
         dto.setDescription(ticket.getDescription());

@@ -2,7 +2,6 @@ package com.smartcampus.hub.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smartcampus.hub.entity.Ticket;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,7 @@ public class GeminiService {
     // Google's Gemini Pro endpoint URL structure
     private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=";
 
-    public Ticket.TicketCategory categorizeTicketDescription(String title, String description) {
+    public String categorizeTicketDescription(String title, String description) {
         String prompt = buildPrompt(title, description);
 
         try {
@@ -73,14 +72,14 @@ public class GeminiService {
                     .path("content").path("parts").path(0)
                     .path("text");
 
-            String aiResponse = textNode.asText().trim().toUpperCase();
+            String aiResponse = textNode.asText().trim();
 
-            // 5. Safely map string back to the backend Enum
+            // 5. Safely return the category string
             return parseCategorySafe(aiResponse);
 
         } catch (Exception e) {
-            logger.error("Failed to categorize ticket with Gemini API. Defaulting to OTHER.", e);
-            return Ticket.TicketCategory.OTHER;
+            logger.error("Failed to categorize ticket with Gemini API. Defaulting to Other.", e);
+            return "Other";
         }
     }
 
@@ -89,26 +88,27 @@ public class GeminiService {
                 You are an AI assistant for a University Campus Operations system.
                 Your task is to analyze the following maintenance ticket and classify it into EXACTLY ONE of these specific categories:
 
-                [HARDWARE, SOFTWARE, NETWORK, PLUMBING, ELECTRICAL, FURNITURE, HVAC, OTHER]
+                [Facilities, IT & Equipment, Academic & Exams, Transport, Student Services, Other]
 
                 Title: "%s"
                 Description: "%s"
 
-                Rule: Respond ONLY with the raw category name exactly as written above. DO NOT provide markdown padding, explanations, or periods.
+                Rule: Respond ONLY with the exact category name exactly as written above. DO NOT provide markdown padding, explanations, or periods.
                 """
                 .formatted(title, description);
     }
 
-    private Ticket.TicketCategory parseCategorySafe(String aiResponse) {
-        // Strip markdown fences just in case Gemini ignored the prompt prompt
-        // instructions
+    private String parseCategorySafe(String aiResponse) {
+        // Strip markdown fences just in case Gemini ignored the prompt instructions
         String cleaned = aiResponse.replaceAll("`", "").trim();
-
-        try {
-            return Ticket.TicketCategory.valueOf(cleaned);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Gemini returned invalid category enum: {}. Defaulting.", cleaned);
-            return Ticket.TicketCategory.OTHER;
+        List<String> validCategories = List.of("Facilities", "IT & Equipment", "Academic & Exams", "Transport", "Student Services", "Other");
+        
+        for (String cat : validCategories) {
+            if (cleaned.equalsIgnoreCase(cat)) {
+                return cat;
+            }
         }
+        logger.warn("Gemini returned invalid category: {}. Defaulting.", cleaned);
+        return "Other";
     }
 }

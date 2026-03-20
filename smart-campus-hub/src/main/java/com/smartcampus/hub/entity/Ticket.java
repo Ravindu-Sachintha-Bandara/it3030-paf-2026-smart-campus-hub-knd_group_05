@@ -18,7 +18,7 @@ public class Ticket {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resource_id", nullable = false)
+    @JoinColumn(name = "resource_id", nullable = true)
     private Resource resource;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,8 +35,7 @@ public class Ticket {
     @Column(nullable = false)
     private TicketStatus status;
 
-    @Enumerated(EnumType.STRING)
-    private TicketCategory category;
+    private String category;
 
     @Column(length = 2000)
     private String resolutionNotes;
@@ -52,16 +51,4 @@ public class Ticket {
         IN_PROGRESS,
         RESOLVED,
         CLOSED
-    }
-
-    public enum TicketCategory {
-        HARDWARE,
-        SOFTWARE,
-        NETWORK,
-        PLUMBING,
-        ELECTRICAL,
-        FURNITURE,
-        HVAC,
-        OTHER
-    }
-}
+    }}
