@@ -76,16 +76,7 @@ const DashboardPage = () => {
 
             {/* Filters Bar */}
             <div className="card" style={{ marginBottom: '2rem', padding: '1.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                <div style={{ flex: '1 1 250px' }}>
-                    <label className="form-label">Search</label>
-                    <input
-                        type="text"
-                        className="input-field"
-                        placeholder="Search by name or location..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
+
 
                 <div style={{ flex: '1 1 200px' }}>
                     <label className="form-label">Resource Type</label>

@@ -4,6 +4,10 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import OAuthCallback from './pages/OAuthCallback';
 import DashboardPage from './pages/DashboardPage';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import UserDashboard from './pages/user/UserDashboard';
+import FullCalendarView from './pages/user/FullCalendarView';
+
 
 // PrivateRoute wrapper component
 const PrivateRoute = ({ children }) => {
@@ -29,6 +33,30 @@ const AppRoutes = () => {
                 element={
                     <PrivateRoute>
                         <DashboardPage />
+                    </PrivateRoute>
+                }
+            />
+            <Route
+                path="/admin/dashboard"
+                element={
+                    <PrivateRoute>
+                        <AdminDashboard />
+                    </PrivateRoute>
+                }
+            />
+            <Route
+                path="/user/dashboard"
+                element={
+                    <PrivateRoute>
+                        <UserDashboard />
+                    </PrivateRoute>
+                }
+            />
+            <Route
+                path="/user/calendar"
+                element={
+                    <PrivateRoute>
+                        <FullCalendarView />
                     </PrivateRoute>
                 }
             />

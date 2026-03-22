@@ -135,26 +135,11 @@ const Layout = () => {
                     margin: '16px 24px',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
+                    justifyContent: 'flex-end', /* Pushes the profile/notifications to the right */
                     padding: '12px 24px',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
                     boxSizing: 'border-box'
                 }}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <div style={{ position: 'relative' }}>
-                            <svg style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--sliit-gray)' }} width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                            <input type="text" placeholder="Search..." style={{
-                                backgroundColor: 'var(--bg-main)',
-                                borderRadius: '20px',
-                                padding: '8px 16px 8px 36px',
-                                border: 'none',
-                                width: '300px',
-                                fontSize: '0.9rem',
-                                color: 'var(--sliit-dark-navy)',
-                                outline: 'none'
-                            }} />
-                        </div>
-                    </div>
                     
                     <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
                         <button 

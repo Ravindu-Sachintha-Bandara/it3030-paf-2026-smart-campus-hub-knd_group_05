@@ -5,7 +5,7 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UserDashboard from './pages/user/UserDashboard';
-import Bookings from './pages/Bookings';
+import FullCalendarView from './pages/user/FullCalendarView'; // NEW CALENDAR IMPORT
 import Resources from './pages/Resources';
 import Tickets from './pages/Tickets';
 import Notifications from './pages/Notifications';
@@ -33,7 +33,9 @@ function App() {
             <Route path="/user/dashboard" element={<UserRoute><UserDashboard /></UserRoute>} />
 
             {/* Common Protected Routes */}
-            <Route path="/bookings" element={<UserRoute><Bookings /></UserRoute>} />
+            {/* UPDATED: Swapped 'Bookings' for 'FullCalendarView' */}
+            <Route path="/bookings" element={<UserRoute><FullCalendarView /></UserRoute>} />
+            
             <Route path="/tickets" element={<UserRoute><Tickets /></UserRoute>} />
             <Route path="/resources" element={<UserRoute><Resources /></UserRoute>} />
             <Route path="/notifications" element={<UserRoute><Notifications /></UserRoute>} />
