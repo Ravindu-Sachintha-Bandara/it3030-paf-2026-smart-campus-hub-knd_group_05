@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -7,6 +8,7 @@ import api from '../../services/api';
 
 const FullCalendarView = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -16,8 +18,11 @@ const FullCalendarView = () => {
                 const response = await api.get('/api/bookings');
                 const allBookings = response.data || [];
 
+                // Strict Status Filtering (Crucial)
+                const activeBookings = allBookings.filter(b => b.status === 'APPROVED' || b.status === 'ACCEPTED');
+
                 // Transform database records into FullCalendar events
-                const mappedEvents = allBookings.map(booking => {
+                const mappedEvents = activeBookings.map(booking => {
                     // Logic to identify if the booking belongs to the logged-in user
                     const isMine = booking.userId === user?.id || booking.user?.id === user?.id;
                     
@@ -31,6 +36,7 @@ const FullCalendarView = () => {
                         borderColor: isMine ? '#ea580c' : '#1e293b',
                         textColor: 'white',
                         extendedProps: {
+                            resourceId: booking.resource?.id,
                             description: booking.purpose,
                             status: booking.status,
                             user: booking.user?.name || 'Faculty',
@@ -47,7 +53,11 @@ const FullCalendarView = () => {
             }
         };
 
-        if (user) fetchBookings();
+        if (user) {
+            fetchBookings();
+            const intervalId = setInterval(fetchBookings, 10000);
+            return () => clearInterval(intervalId);
+        }
     }, [user]);
 
     return (
@@ -99,14 +109,36 @@ const FullCalendarView = () => {
                                 week: 'Week'
                             }}
                             height="auto"
-                            eventClick={(info) => {
-                                const { title, extendedProps } = info.event;
-                                alert(
-                                    `📌 Resource: ${title}\n` +
-                                    `👤 Requested by: ${extendedProps.user}\n` +
-                                    `🕒 Status: ${extendedProps.status}\n` +
-                                    `📝 Purpose: ${extendedProps.description || 'N/A'}`
+                            eventContent={(eventInfo) => {
+                                const { title, extendedProps, start, end } = eventInfo.event;
+                                const startTime = start ? new Date(start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+                                const endTime = end ? new Date(end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+                                const timeString = endTime ? `${startTime} - ${endTime}` : startTime;
+                                
+                                return (
+                                    <div style={{ padding: '2px', display: 'flex', flexDirection: 'column', width: '100%' }}>
+                                        <b style={{ fontSize: '0.85em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{timeString}</b>
+                                        <span style={{ fontSize: '0.8em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{title} (ID: {extendedProps.resourceId || 'N/A'})</span>
+                                    </div>
                                 );
+                            }}
+                            eventClick={(info) => {
+                                const { title, start, end, extendedProps } = info.event;
+                                if (extendedProps.isMine) {
+                                    navigate('/bookings');
+                                } else {
+                                    const startDate = start ? new Date(start).toLocaleString() : 'N/A';
+                                    const endDate = end ? new Date(end).toLocaleString() : 'N/A';
+                                    alert(
+                                        `📌 Resource: ${title}\n` +
+                                        `🆔 Resource ID: ${extendedProps.resourceId || 'N/A'}\n` +
+                                        `🟢 Start Time: ${startDate}\n` +
+                                        `🔴 End Time: ${endDate}\n` +
+                                        `👤 Requested by: ${extendedProps.user}\n` +
+                                        `🕒 Status: ${extendedProps.status}\n` +
+                                        `📝 Purpose: ${extendedProps.description || 'N/A'}`
+                                    );
+                                }
                             }}
                         />
                     )}

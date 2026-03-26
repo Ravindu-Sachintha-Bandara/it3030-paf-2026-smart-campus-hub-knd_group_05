@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import api from '../services/api';
+import { useNavigate } from 'react-router-dom'; // 1. IMPORTED NAVIGATE
+import { useAuth } from '../../context/AuthContext';
+import api from '../../services/api';
 
-const Tickets = () => {
+const MyTickets = () => {
     const { user } = useAuth();
+    const navigate = useNavigate(); // 2. INITIALIZED NAVIGATE
     const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const fetchMyTickets = async () => {
         try {
             const response = await api.get('/api/tickets');
-            // Strictly filter for this specific user
             const myTickets = (response.data || []).filter(t => t.userId === user?.id || t.user?.id === user?.id);
-            // Sort by newest first
             myTickets.sort((a, b) => new Date(b.createdAt || Date.now()) - new Date(a.createdAt || Date.now()));
             setTickets(myTickets);
             setLoading(false);
@@ -28,11 +28,8 @@ const Tickets = () => {
         return () => clearInterval(interval);
     }, [user]);
 
-    // KPI & Data Calculations
     const openTickets = tickets.filter(t => t.status !== 'CLOSED' && t.status !== 'RESOLVED');
     const resolvedTickets = tickets.filter(t => t.status === 'CLOSED' || t.status === 'RESOLVED');
-    
-    // Split for UI layout
     const featuredTicket = openTickets.length > 0 ? openTickets[0] : null;
     const standardTickets = openTickets.slice(1);
 
@@ -50,12 +47,17 @@ const Tickets = () => {
                     <p style={{ margin: 0, fontSize: '0.75rem', fontWeight: '800', color: '#b45309', letterSpacing: '1px', textTransform: 'uppercase' }}>User Support Center</p>
                     <h1 style={{ margin: '4px 0 0 0', fontSize: '2.2rem', color: '#1e293b', fontWeight: '900', letterSpacing: '-0.5px' }}>My Support Tickets</h1>
                 </div>
-                <button style={{ 
-                    backgroundColor: '#1e293b', color: 'white', padding: '12px 24px', borderRadius: '8px', 
-                    border: 'none', fontWeight: 'bold', fontSize: '0.9rem', cursor: 'pointer',
-                    boxShadow: '0 4px 6px -1px rgba(30, 41, 59, 0.2)'
-                }}>
-                    New Resource Request
+                
+                {/* 3. WIRED UP THE BUTTON AND CHANGED THE TEXT! */}
+                <button 
+                    onClick={() => navigate('/tickets/new')}
+                    style={{ 
+                        backgroundColor: '#1e293b', color: 'white', padding: '12px 24px', borderRadius: '8px', 
+                        border: 'none', fontWeight: 'bold', fontSize: '0.9rem', cursor: 'pointer',
+                        boxShadow: '0 4px 6px -1px rgba(30, 41, 59, 0.2)'
+                    }}
+                >
+                    New Ticket Request
                 </button>
             </div>
 
@@ -112,7 +114,7 @@ const Tickets = () => {
                                         <span style={{ backgroundColor: '#dc2626', color: 'white', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' }}>
                                             {featuredTicket.priority || 'PRIORITY'}
                                         </span>
-                                        <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Ticket #{featuredTicket.id.toString().padStart(5, '0')}</span>
+                                        <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Ticket #{featuredTicket.id?.toString().padStart(5, '0')}</span>
                                     </div>
                                     
                                     <h2 style={{ margin: '0 0 16px 0', fontSize: '2rem', fontWeight: '800', lineHeight: '1.2' }}>{featuredTicket.title || 'Support Request'}</h2>
@@ -172,24 +174,20 @@ const Tickets = () => {
                         <h3 style={{ margin: '0 0 32px 0', fontSize: '1rem', color: '#1e293b', fontWeight: '900', letterSpacing: '1px', textTransform: 'uppercase' }}>Activity Timeline</h3>
                         
                         <div style={{ position: 'relative', paddingLeft: '24px' }}>
-                            {/* Vertical Line */}
                             <div style={{ position: 'absolute', left: '7px', top: '10px', bottom: '0', width: '2px', backgroundColor: '#e2e8f0' }}></div>
 
-                            {/* Timeline Item 1 */}
                             <div style={{ position: 'relative', marginBottom: '32px' }}>
                                 <div style={{ position: 'absolute', left: '-24px', top: '4px', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: 'white', border: '3px solid #1e293b' }}></div>
                                 <p style={{ margin: 0, fontSize: '0.9rem', color: '#1e293b' }}><span style={{ fontWeight: 'bold' }}>System</span> checked your recent ticket request.</p>
                                 <p style={{ margin: '4px 0 0 0', fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>JUST NOW</p>
                             </div>
 
-                            {/* Timeline Item 2 */}
                             <div style={{ position: 'relative', marginBottom: '32px' }}>
                                 <div style={{ position: 'absolute', left: '-24px', top: '4px', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: 'white', border: '3px solid #b45309' }}></div>
                                 <p style={{ margin: 0, fontSize: '0.9rem', color: '#1e293b' }}><span style={{ fontWeight: 'bold' }}>Support Desk</span> updated status to Reviewing.</p>
                                 <p style={{ margin: '4px 0 0 0', fontSize: '0.75rem', color: '#94a3b8', fontWeight: 'bold' }}>14 MINUTES AGO</p>
                             </div>
 
-                            {/* Timeline Item 3 */}
                             <div style={{ position: 'relative' }}>
                                 <div style={{ position: 'absolute', left: '-24px', top: '4px', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: 'white', border: '3px solid #cbd5e1' }}></div>
                                 <p style={{ margin: 0, fontSize: '0.9rem', color: '#1e293b' }}>Ticket successfully created and routed.</p>
@@ -202,16 +200,21 @@ const Tickets = () => {
             </div>
             
             {/* Floating Action Button */}
-            <button style={{ 
-                position: 'fixed', bottom: '40px', right: '40px', width: '60px', height: '60px', 
-                borderRadius: '50%', backgroundColor: '#b45309', color: 'white', fontSize: '2rem', 
-                border: 'none', cursor: 'pointer', boxShadow: '0 10px 15px -3px rgba(180, 83, 9, 0.3)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform 0.2s'
-            }} onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}>
+            <button 
+                onClick={() => navigate('/tickets/new')}
+                style={{ 
+                    position: 'fixed', bottom: '40px', right: '40px', width: '60px', height: '60px', 
+                    borderRadius: '50%', backgroundColor: '#b45309', color: 'white', fontSize: '2rem', 
+                    border: 'none', cursor: 'pointer', boxShadow: '0 10px 15px -3px rgba(180, 83, 9, 0.3)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'transform 0.2s'
+                }} 
+                onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'} 
+                onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+            >
                 +
             </button>
         </div>
     );
 };
 
-export default Tickets;
+export default MyTickets;

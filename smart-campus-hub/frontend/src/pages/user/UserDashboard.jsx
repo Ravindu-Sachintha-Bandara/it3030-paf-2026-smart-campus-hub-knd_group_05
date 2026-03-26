@@ -36,13 +36,17 @@ const UserDashboard = () => {
             const activities = [
                 ...myRawBookings.map(b => ({ 
                     title: 'Booking Update', 
-                    desc: `${b.resource?.name || 'Resource'}: Status is ${b.status}`, 
+                    type: 'booking',
+                    resourceName: b.resource?.name || 'Unknown',
+                    status: b.status,
                     time: 'Recent', 
                     icon: b.status === 'APPROVED' ? '✅' : '⏳' 
                 })),
                 ...myRawTickets.map(t => ({ 
                     title: 'Ticket Status', 
-                    desc: `Ticket #${t.id.toString().slice(-4)} is ${t.status}`, 
+                    type: 'ticket',
+                    ticketId: t.id.toString().slice(-4),
+                    status: t.status,
                     time: 'Update', 
                     icon: '🎫' 
                 }))
@@ -130,7 +134,7 @@ const UserDashboard = () => {
                 <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '16px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                         <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.2rem' }}>Recent Activity Feed</h3>
-                        <button style={{ background: 'none', border: 'none', color: '#9a3412', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}>VIEW ALL HISTORY</button>
+                        <button onClick={() => navigate('/bookings')} style={{ background: 'none', border: 'none', color: '#9a3412', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}>VIEW ALL HISTORY</button>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', position: 'relative' }}>
                         <div style={{ position: 'absolute', left: '19px', top: '10px', bottom: '10px', width: '2px', backgroundColor: '#f1f5f9' }}></div>
@@ -139,7 +143,9 @@ const UserDashboard = () => {
                                 <div style={{ width: '40px', height: '40px', backgroundColor: 'white', border: '2px solid #f1f5f9', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{act.icon}</div>
                                 <div>
                                     <h4 style={{ margin: 0, color: '#1e293b', fontSize: '1rem' }}>{act.title}</h4>
-                                    <p style={{ margin: '4px 0', fontSize: '0.9rem', color: '#64748b' }}>{act.desc}</p>
+                                    <p style={{ margin: '4px 0', fontSize: '0.9rem', color: '#64748b' }}>
+                                        {act.type === 'booking' ? `Resource ${act.resourceName} is ${act.status}` : `Ticket #${act.ticketId} is ${act.status}`}
+                                    </p>
                                     <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{act.time}</span>
                                 </div>
                             </div>
@@ -176,7 +182,7 @@ const UserDashboard = () => {
                     </div>
 
                     <button 
-                        onClick={() => navigate('/bookings')}
+                        onClick={() => navigate('/user/calendar')}
                         style={{ width: '100%', marginTop: '32px', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0', backgroundColor: 'white', color: '#1e293b', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer', transition: '0.2s' }}
                         onMouseOver={(e) => e.target.style.backgroundColor = '#f8fafc'}
                         onMouseOut={(e) => e.target.style.backgroundColor = 'white'}

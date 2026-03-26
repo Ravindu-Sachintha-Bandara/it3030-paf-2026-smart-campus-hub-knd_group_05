@@ -1,333 +1,200 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-
-const timeOptions = (() => {
-    const options = [];
-    for (let i = 8; i <= 23; i++) {
-        for (let j = 0; j < 60; j += 30) {
-            if (i === 23 && j > 0) continue;
-            const hour = i.toString().padStart(2, '0');
-            const minute = j.toString().padStart(2, '0');
-            options.push(`${hour}:${minute}`);
-        }
-    }
-    return options;
-})();
+import { useAuth } from '../context/AuthContext';
 
 const Bookings = () => {
+    const navigate = useNavigate();
+    const { user } = useAuth();
     const [bookings, setBookings] = useState([]);
+    const [activeTab, setActiveTab] = useState('All');
+    const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
 
-    const [loggedInUser, setLoggedInUser] = useState(null);
-    const [userLoading, setUserLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await api.get('/api/users/me');
-                setLoggedInUser(response.data);
-            } catch (err) {
-                console.error("Error fetching user data", err);
-            } finally {
-                setUserLoading(false);
-            }
-        };
-        fetchUser();
-    }, []);
-
-    // Form state
-    const [resourceId, setResourceId] = useState('');
-    const [purpose, setPurpose] = useState('');
-    const [date, setDate] = useState('');
-    const [startTimeStr, setStartTimeStr] = useState('');
-    const [endTimeStr, setEndTimeStr] = useState('');
-    const [resources, setResources] = useState([]);
-    const [errorMessage, setErrorMessage] = useState(null);
-    const [statusFilter, setStatusFilter] = useState('ALL');
-
-    useEffect(() => {
-        const fetchResources = async () => {
-            try {
-                const response = await api.get('/api/resources');
-                setResources(response.data);
-            } catch (err) {
-                console.error("Error fetching resources", err);
-            }
-        };
-        fetchResources();
-    }, []);
-
-    const fetchBookings = async () => {
-        if (!loggedInUser) return;
+    const fetchMyBookings = async () => {
         try {
-            let endpoint = '/api/bookings';
-            if (loggedInUser.role === 'USER') {
-                endpoint = `/api/bookings?userId=${loggedInUser.id}`;
-            }
-            const response = await api.get(endpoint);
-            setBookings(response.data);
-        } catch (err) {
-            console.error('Error fetching bookings:', err);
-            setError('Failed to load bookings.');
-        } finally {
+            const response = await api.get('/api/bookings');
+            // Filter strictly for this logged-in user
+            const myBookings = (response.data || []).filter(b => b.userId === user?.id || b.user?.id === user?.id);
+            // Sort newest first
+            myBookings.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+            setBookings(myBookings);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching my bookings:", error);
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        if (loggedInUser) {
-            fetchBookings();
-        }
-    }, [loggedInUser]);
+        fetchMyBookings();
+        const interval = setInterval(fetchMyBookings, 10000);
+        return () => clearInterval(interval);
+    }, [user]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setErrorMessage(null); // Clear previous errors
+    const cancelBooking = async (id) => {
+        if (!window.confirm("Are you sure you want to cancel this request?")) return;
         try {
-            const startDateTime = `${date}T${startTimeStr}:00`;
-            const endDateTime = `${date}T${endTimeStr}:00`;
-            const userId = loggedInUser ? loggedInUser.id : 1;
-            await api.post(`/api/bookings?userId=${userId}`, {
-                resourceId: parseInt(resourceId, 10),
-                purpose,
-                startTime: startDateTime,
-                endTime: endDateTime
-            });
-            // Clear form
-            setResourceId('');
-            setPurpose('');
-            setDate('');
-            setStartTimeStr('');
-            setEndTimeStr('');
-            // Refresh table
-            fetchBookings();
-        } catch (err) {
-            console.error('Error creating booking:', err);
-            const msg = err.response?.data?.message || err.response?.data?.error || err.message || 'An error occurred while creating your booking.';
-            setErrorMessage(msg);
+            setBookings(prev => prev.map(b => b.id === id ? { ...b, status: 'CANCELLED' } : b));
+            await api.put(`/api/bookings/${id}/status`, { status: 'CANCELLED' });
+        } catch (error) {
+            console.error("Failed to cancel", error);
+            fetchMyBookings();
         }
     };
 
-    const handleCancel = async (bookingId) => {
-        if (window.confirm('Are you sure you want to cancel this booking?')) {
-            try {
-                await api.delete(`/api/bookings/${bookingId}`);
-                fetchBookings();
-            } catch (err) {
-                console.error('Error canceling booking:', err);
-                alert('Error: ' + (err.response?.data?.message || err.response?.data?.error || err.message));
-            }
-        }
-    };
+    // Filter Logic
+    const filteredBookings = bookings.filter(b => {
+        const matchesSearch = b.resource?.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                              b.purpose?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesTab = activeTab === 'All' || b.status.toUpperCase() === activeTab.toUpperCase();
+        return matchesSearch && matchesTab;
+    });
 
-    const handleApprove = async (bookingId) => {
-        try {
-            await api.put(`/api/bookings/${bookingId}/approve`);
-            fetchBookings();
-        } catch (err) {
-            console.error('Error approving booking:', err);
-            alert('Error: ' + (err.response?.data?.message || err.response?.data?.error || err.message));
-        }
-    };
-
-    const handleReject = async (bookingId) => {
-        const reason = window.prompt('Enter rejection reason:');
-        if (!reason) return;
-
-        try {
-            await api.put(`/api/bookings/${bookingId}/reject`, { reason });
-            fetchBookings();
-        } catch (err) {
-            console.error('Error rejecting booking:', err);
-            alert('Error: ' + (err.response?.data?.message || err.response?.data?.error || err.message));
-        }
-    };
-
-    const formatDate = (dateString) => {
-        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-        return new Date(dateString).toLocaleDateString(undefined, options);
-    };
-
-    if (userLoading) {
-        return <p>Loading user data...</p>;
-    }
+    // Helper formatting
+    const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
     return (
-        <div>
-            <header style={{ marginBottom: '30px', borderBottom: '1px solid #eee', paddingBottom: '15px' }}>
-                <h1 style={{ margin: 0, color: '#333' }}>Bookings</h1>
-            </header>
-
-            {/* Create Booking Form */}
-            {loggedInUser?.role !== 'ADMIN' && (
-            <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '30px', border: '1px solid #e9ecef' }}>
-                <h2 style={{ top: 0, marginTop: 0, fontSize: '1.2em', color: '#444', marginBottom: '16px' }}>Create Booking</h2>
-                
-                {errorMessage && (
-                    <div style={{ background: '#FEE2E2', color: '#991B1B', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontWeight: '500', fontSize: '0.95rem' }}>
-                        {errorMessage}
-                    </div>
-                )}
-                
-                <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '15px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '150px' }}>
-                        <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Resource</label>
-                        <select
-                            required
-                            value={resourceId}
-                            onChange={(e) => { setResourceId(e.target.value); setErrorMessage(null); }}
-                            style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: 'white' }}
-                        >
-                            <option value="">Select Resource</option>
-                            {resources.map(res => (
-                                <option key={res.id} value={res.id}>{res.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', flex: '2', minWidth: '200px' }}>
-                        <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Purpose</label>
-                        <input
-                            type="text"
-                            required
-                            value={purpose}
-                            onChange={(e) => setPurpose(e.target.value)}
-                            style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
-                            placeholder="Meeting purpose"
-                        />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '150px' }}>
-                        <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Date</label>
-                        <input
-                            type="date"
-                            required
-                            value={date}
-                            onChange={(e) => { setDate(e.target.value); setErrorMessage(null); }}
-                            style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc', color: 'var(--sliit-navy)' }}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '120px' }}>
-                        <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>Start Time</label>
-                        <select
-                            required
-                            value={startTimeStr}
-                            onChange={(e) => { setStartTimeStr(e.target.value); setErrorMessage(null); }}
-                            style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc', color: 'var(--sliit-navy)', backgroundColor: 'white' }}
-                        >
-                            <option value="">Select Time</option>
-                            {timeOptions.map(time => <option key={time} value={time}>{time}</option>)}
-                        </select>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', flex: '1', minWidth: '120px' }}>
-                        <label style={{ fontSize: '14px', marginBottom: '5px', color: '#555' }}>End Time</label>
-                        <select
-                            required
-                            value={endTimeStr}
-                            onChange={(e) => { setEndTimeStr(e.target.value); setErrorMessage(null); }}
-                            style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc', color: 'var(--sliit-navy)', backgroundColor: 'white' }}
-                        >
-                            <option value="">Select Time</option>
-                            {timeOptions.map(time => <option key={time} value={time}>{time}</option>)}
-                        </select>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'flex-end', height: '62px' }}>
-                        <button type="submit" style={{ padding: '10px 20px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
-                            Book Now
-                        </button>
-                    </div>
-                </form>
-            </div>
-            )}
-
-            {error && <div style={{ padding: '15px', backgroundColor: '#f8d7da', color: '#721c24', marginBottom: '20px', borderRadius: '4px' }}>{error}</div>}
-
-            {/* Admin Filter Row */}
-            {loggedInUser?.role === 'ADMIN' && (
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px', alignItems: 'center', gap: '10px' }}>
-                    <label style={{ fontSize: '14px', color: '#555', fontWeight: '500' }}>Filter by Status:</label>
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #ccc', color: 'var(--sliit-navy)', backgroundColor: 'white', fontSize: '0.9rem', outline: 'none' }}
-                    >
-                        <option value="ALL">All</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="APPROVED">Approved</option>
-                        <option value="REJECTED">Rejected</option>
-                        <option value="CANCELLED">Cancelled</option>
-                    </select>
+        <div style={{ padding: '32px', backgroundColor: '#f8fafc', minHeight: '100vh', boxSizing: 'border-box' }}>
+            
+            {/* Header Area */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
+                <div>
+                    <h1 style={{ margin: 0, fontSize: '2.5rem', color: '#111827', fontWeight: '900', letterSpacing: '-0.5px' }}>My Bookings</h1>
+                    <p style={{ margin: '8px 0 0 0', color: '#6b7280', fontSize: '1rem', maxWidth: '600px', lineHeight: '1.5' }}>
+                        Manage your academic facility reservations, track approval statuses, and handle scheduling conflicts from your personal dashboard.
+                    </p>
                 </div>
-            )}
+                <button 
+                    onClick={() => navigate('/bookings/new')}
+                    style={{ 
+                    backgroundColor: '#ea580c', color: 'white', padding: '12px 24px', borderRadius: '8px', 
+                    border: 'none', fontWeight: 'bold', fontSize: '0.9rem', cursor: 'pointer',
+                    boxShadow: '0 4px 6px -1px rgba(234, 88, 12, 0.2)', display: 'flex', alignItems: 'center', gap: '8px'
+                }}>
+                    <span style={{ fontSize: '1.2rem' }}>+</span> NEW REQUEST
+                </button>
+            </div>
 
-            {loading ? (
-                <p>Loading bookings...</p>
-            ) : bookings.length > 0 ? (
-                <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            {/* Controls Row */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+                {/* Tabs */}
+                <div style={{ display: 'flex', backgroundColor: '#f1f5f9', padding: '4px', borderRadius: '10px' }}>
+                    {['All', 'Pending', 'Approved', 'Cancelled'].map(tab => (
+                        <button 
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            style={{
+                                padding: '8px 24px', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '0.9rem', cursor: 'pointer', transition: 'all 0.2s',
+                                backgroundColor: activeTab === tab ? 'white' : 'transparent',
+                                color: activeTab === tab ? '#111827' : '#64748b',
+                                boxShadow: activeTab === tab ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                            }}
+                        >
+                            {tab}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Search & Filter */}
+                <div style={{ display: 'flex', gap: '12px' }}>
+                    <input 
+                        type="text" 
+                        placeholder="🔍 Search resources..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{ padding: '10px 16px', width: '250px', borderRadius: '8px', border: '1px solid #e5e7eb', outline: 'none', fontSize: '0.9rem' }}
+                    />
+                    <button style={{ padding: '10px 20px', backgroundColor: '#e2e8f0', color: '#475569', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <span>≡</span> Filters
+                    </button>
+                </div>
+            </div>
+
+            {/* Main Table Area */}
+            <div style={{ backgroundColor: 'white', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', border: '1px solid #f3f4f6', overflow: 'hidden', marginBottom: '32px' }}>
+                <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead>
-                            <tr style={{ backgroundColor: '#f8f9fa', textTransform: 'uppercase', fontSize: '13px', color: '#555', borderBottom: '2px solid #e9ecef' }}>
-                                <th style={{ padding: '15px', textAlign: 'left' }}>ID</th>
-                                <th style={{ padding: '15px', textAlign: 'left' }}>Resource ID</th>
-                                <th style={{ padding: '15px', textAlign: 'left' }}>Start Time</th>
-                                <th style={{ padding: '15px', textAlign: 'left' }}>End Time</th>
-                                <th style={{ padding: '15px', textAlign: 'left' }}>Status</th>
-                                <th style={{ padding: '15px', textAlign: 'center' }}>Actions</th>
+                            <tr style={{ borderBottom: '2px solid #f3f4f6' }}>
+                                <th style={{ padding: '20px 24px', color: '#374151', fontSize: '0.75rem', fontWeight: '800', letterSpacing: '1px' }}>RESOURCE</th>
+                                <th style={{ padding: '20px 24px', color: '#374151', fontSize: '0.75rem', fontWeight: '800', letterSpacing: '1px' }}>DATE</th>
+                                <th style={{ padding: '20px 24px', color: '#374151', fontSize: '0.75rem', fontWeight: '800', letterSpacing: '1px' }}>TIME</th>
+                                <th style={{ padding: '20px 24px', color: '#374151', fontSize: '0.75rem', fontWeight: '800', letterSpacing: '1px' }}>PURPOSE</th>
+                                <th style={{ padding: '20px 24px', color: '#374151', fontSize: '0.75rem', fontWeight: '800', letterSpacing: '1px' }}>STATUS</th>
+                                <th style={{ padding: '20px 24px', color: '#374151', fontSize: '0.75rem', fontWeight: '800', letterSpacing: '1px', textAlign: 'right' }}>ACTIONS</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {bookings
-                                .filter(b => statusFilter === 'ALL' || b.status.toUpperCase() === statusFilter)
-                                .map(booking => (
-                                <tr key={booking.id} style={{ borderBottom: '1px solid #e9ecef', ':hover': { backgroundColor: '#f8f9fa' } }}>
-                                    <td style={{ padding: '15px', color: '#333' }}>#{booking.id}</td>
-                                    <td style={{ padding: '15px', fontWeight: 'bold' }}>Resource {booking.resourceId}</td>
-                                    <td style={{ padding: '15px', color: '#666' }}>{formatDate(booking.startTime)}</td>
-                                    <td style={{ padding: '15px', color: '#666' }}>{formatDate(booking.endTime)}</td>
-                                    <td style={{ padding: '15px' }}>
-                                        <span style={{
-                                            padding: '4px 10px', borderRadius: '20px', fontSize: '0.85em', fontWeight: 'bold',
-                                            backgroundColor: booking.status === 'APPROVED' ? '#d4edda' : booking.status === 'PENDING' ? '#fff3cd' : '#f8d7da',
-                                            color: booking.status === 'APPROVED' ? '#155724' : booking.status === 'PENDING' ? '#856404' : '#721c24'
-                                        }}>
-                                            {booking.status}
-                                        </span>
-                                    </td>
-                                    <td style={{ padding: '15px', textAlign: 'center' }}>
-                                        {loggedInUser?.role === 'ADMIN' ? (
-                                            <>
-                                                {booking.status === 'PENDING' && (
-                                                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                                                        <button
-                                                            onClick={() => handleApprove(booking.id)}
-                                                            style={{ padding: '6px 12px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85em', fontWeight: 'bold' }}>
-                                                            Approve
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleReject(booking.id)}
-                                                            style={{ padding: '6px 12px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85em', fontWeight: 'bold' }}>
-                                                            Reject
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </>
-                                        ) : (
-                                            <button
-                                                onClick={() => handleCancel(booking.id)}
-                                                style={{ padding: '6px 12px', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85em', fontWeight: 'bold' }}>
-                                                Cancel
-                                            </button>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
+                            {loading ? (
+                                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '60px', color: '#9ca3af' }}>Loading your bookings...</td></tr>
+                            ) : filteredBookings.length === 0 ? (
+                                <tr><td colSpan="6" style={{ textAlign: 'center', padding: '60px', color: '#9ca3af' }}>No bookings found.</td></tr>
+                            ) : (
+                                filteredBookings.map((booking) => (
+                                    <tr key={booking.id} style={{ borderBottom: '1px solid #f3f4f6', transition: 'background-color 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#f9fafb'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'white'}>
+                                        
+                                        <td style={{ padding: '20px 24px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                                <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+                                                    🏢
+                                                </div>
+                                                <div>
+                                                    <p style={{ margin: 0, fontWeight: '700', color: '#111827', fontSize: '0.95rem' }}>{booking.resource?.name || `Resource #${booking.resourceId}`}</p>
+                                                    <p style={{ margin: 0, color: '#6b7280', fontSize: '0.8rem' }}>{booking.resource?.location || 'Campus Facility'}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <td style={{ padding: '20px 24px' }}>
+                                            <p style={{ margin: 0, color: '#374151', fontWeight: '500', fontSize: '0.9rem' }}>{formatDate(booking.startTime)}</p>
+                                        </td>
+
+                                        <td style={{ padding: '20px 24px' }}>
+                                            <p style={{ margin: 0, color: '#374151', fontWeight: '500', fontSize: '0.9rem' }}>{formatTime(booking.startTime)} -<br/>{formatTime(booking.endTime)}</p>
+                                        </td>
+
+                                        <td style={{ padding: '20px 24px', maxWidth: '200px' }}>
+                                            <p style={{ margin: 0, color: '#4b5563', fontSize: '0.9rem', fontStyle: 'italic' }}>{booking.purpose || 'No purpose stated'}</p>
+                                        </td>
+
+                                        <td style={{ padding: '20px 24px' }}>
+                                            <span style={{ 
+                                                padding: '6px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: '800', letterSpacing: '0.5px',
+                                                backgroundColor: booking.status === 'PENDING' ? '#fff7ed' : booking.status === 'APPROVED' ? '#ecfdf5' : booking.status === 'CANCELLED' ? '#f3f4f6' : '#fef2f2',
+                                                color: booking.status === 'PENDING' ? '#ea580c' : booking.status === 'APPROVED' ? '#059669' : booking.status === 'CANCELLED' ? '#6b7280' : '#dc2626'
+                                            }}>
+                                                {booking.status}
+                                            </span>
+                                        </td>
+
+                                        <td style={{ padding: '20px 24px', textAlign: 'right' }}>
+                                            {(booking.status === 'PENDING' || booking.status === 'APPROVED') ? (
+                                                <button onClick={() => cancelBooking(booking.id)} style={{ padding: '6px 16px', backgroundColor: 'white', color: '#dc2626', border: '1px solid #fca5a5', borderRadius: '6px', fontWeight: '700', fontSize: '0.75rem', cursor: 'pointer', transition: '0.2s' }}>
+                                                    CANCEL
+                                                </button>
+                                            ) : (
+                                                <span style={{ color: '#9ca3af', fontSize: '0.85rem' }}>No Actions</span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>
-            ) : (
-                <div style={{ padding: '40px', textAlign: 'center', backgroundColor: 'white', borderRadius: '8px', color: '#666' }}>
-                    <p>No bookings found.</p>
+
+                {/* Pagination Footer */}
+                <div style={{ padding: '16px 24px', borderTop: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f9fafb' }}>
+                    <span style={{ fontSize: '0.85rem', color: '#6b7280', fontWeight: '500' }}>Showing {filteredBookings.length} bookings</span>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        <button style={{ padding: '6px 16px', border: '1px solid #e5e7eb', backgroundColor: 'white', borderRadius: '6px', color: '#4b5563', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#f3f4f6'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'white'}>Previous</button>
+                        <button style={{ padding: '6px 16px', border: '1px solid #e5e7eb', backgroundColor: 'white', borderRadius: '6px', color: '#4b5563', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#f3f4f6'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'white'}>Next</button>
+                    </div>
                 </div>
-            )}
+            </div>
+
         </div>
     );
 };
