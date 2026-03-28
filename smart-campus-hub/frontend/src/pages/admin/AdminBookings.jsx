@@ -77,44 +77,44 @@ const AdminBookings = () => {
 
     const getStatusStyles = (status) => {
         switch (status) {
-            case 'PENDING': return { bg: '#fff7ed', color: '#ea580c', dot: '#ea580c' };
-            case 'APPROVED': return { bg: '#ecfdf5', color: '#10b981', dot: '#10b981' };
-            case 'REJECTED': return { bg: '#fef2f2', color: '#ef4444', dot: '#ef4444' };
-            default: return { bg: '#f1f5f9', color: '#64748b', dot: '#64748b' };
+            case 'PENDING': return { bg: '#fffbeb', color: '#d97706', dot: '#d97706' };
+            case 'APPROVED': return { bg: '#ecfdf5', color: '#059669', dot: '#059669' };
+            case 'REJECTED': return { bg: '#fef2f2', color: '#dc2626', dot: '#dc2626' };
+            default: return { bg: '#f8fafc', color: '#64748b', dot: '#64748b' };
         }
     };
 
     return (
-        <div style={{ padding: '32px', backgroundColor: '#f8fafc', minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
-            <h1 style={{ fontSize: '2rem', color: '#1e293b', fontWeight: '800', marginBottom: '8px', marginTop: 0 }}>Campus Bookings</h1>
-            <p style={{ color: '#64748b', marginBottom: '32px', marginTop: 0 }}>Enterprise management interface for all resource reservations.</p>
+        <div style={{ padding: '32px', backgroundColor: '#f8fafc', minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif', boxSizing: 'border-box' }}>
+            <h1 style={{ fontSize: '2rem', color: '#0f172a', fontWeight: '800', marginBottom: '8px', marginTop: 0, letterSpacing: '-0.025em' }}>Campus Bookings</h1>
+            <p style={{ color: '#64748b', marginBottom: '32px', marginTop: 0, fontSize: '1rem' }}>Enterprise management interface for all resource reservations.</p>
 
             {/* KPI Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px', marginBottom: '32px' }}>
                 {[
-                    { title: 'TOTAL BOOKINGS', value: totalBookings, color: '#1e293b' },
+                    { title: 'TOTAL BOOKINGS', value: totalBookings, color: '#0f172a' },
                     { title: 'PENDING APPROVAL', value: pendingCount, color: '#ea580c' },
-                    { title: 'OCCUPANCY RATE', value: '88%', color: '#1e293b' },
-                    { title: 'SYSTEM UPTIME', value: '99.9%', color: '#1e293b' }
+                    { title: 'OCCUPANCY RATE', value: '88%', color: '#0f172a' },
+                    { title: 'SYSTEM UPTIME', value: '99.9%', color: '#0f172a' }
                 ].map((kpi, idx) => (
                     <div key={idx} style={{ 
-                        backgroundColor: 'white', 
+                        backgroundColor: '#ffffff', 
                         padding: '24px', 
                         borderRadius: '12px', 
                         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
                         border: '1px solid #e2e8f0'
                     }}>
-                        <p style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#64748b', margin: '0 0 8px 0', letterSpacing: '0.05em' }}>{kpi.title}</p>
-                        <h2 style={{ fontSize: '2.5rem', fontWeight: '800', color: kpi.color, margin: 0 }}>{kpi.value}</h2>
+                        <p style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', margin: '0 0 8px 0', letterSpacing: '0.05em', textTransform: 'uppercase' }}>{kpi.title}</p>
+                        <h2 style={{ fontSize: '2.5rem', fontWeight: '800', color: kpi.color, margin: 0, letterSpacing: '-0.025em' }}>{kpi.value}</h2>
                     </div>
                 ))}
             </div>
 
             {/* Main Content Area */}
             <div style={{ 
-                backgroundColor: 'white', 
+                backgroundColor: '#ffffff', 
                 borderRadius: '12px', 
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
                 border: '1px solid #e2e8f0',
                 overflow: 'hidden'
             }}>
@@ -127,24 +127,24 @@ const AdminBookings = () => {
                     alignItems: 'center',
                     flexWrap: 'wrap',
                     gap: '16px',
-                    backgroundColor: '#fafafa'
+                    backgroundColor: '#ffffff'
                 }}>
                     {/* Left Actions */}
                     <div style={{ display: 'flex', gap: '12px' }}>
-                        <select style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', backgroundColor: 'white', fontSize: '0.9rem', color: '#1e293b' }}>
+                        <select style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', outline: 'none', backgroundColor: '#ffffff', fontSize: '0.95rem', color: '#334155', fontWeight: '500' }}>
                             <option value="">Bulk Actions</option>
                             <option value="approve">Approve Selected</option>
                             <option value="reject">Reject Selected</option>
                         </select>
                         <button style={{ 
                             padding: '8px 16px', 
-                            borderRadius: '6px', 
+                            borderRadius: '8px', 
                             border: '1px solid #e2e8f0', 
-                            backgroundColor: 'white', 
+                            backgroundColor: '#ffffff', 
                             fontWeight: '600',
-                            color: '#1e293b',
+                            color: '#334155',
                             cursor: 'pointer',
-                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                            fontSize: '0.95rem'
                         }}>Apply</button>
                     </div>
 
@@ -157,17 +157,19 @@ const AdminBookings = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             style={{ 
                                 padding: '8px 16px', 
-                                borderRadius: '6px', 
-                                border: '1px solid #cbd5e1', 
+                                borderRadius: '8px', 
+                                border: '1px solid #e2e8f0', 
                                 width: '250px',
                                 outline: 'none',
-                                fontSize: '0.9rem'
+                                fontSize: '0.95rem',
+                                color: '#334155',
+                                fontWeight: '500'
                             }}
                         />
                         <select 
                             value={filterStatus}
                             onChange={(e) => setFilterStatus(e.target.value)}
-                            style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', outline: 'none', backgroundColor: 'white', fontSize: '0.9rem', color: '#1e293b', fontWeight: '500' }}
+                            style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', outline: 'none', backgroundColor: '#ffffff', fontSize: '0.95rem', color: '#334155', fontWeight: '500' }}
                         >
                             <option value="ALL">All Status</option>
                             <option value="PENDING">Pending</option>
@@ -181,58 +183,60 @@ const AdminBookings = () => {
                 <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead>
-                            <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e2e8f0' }}>
                                 <th style={{ padding: '16px 24px', width: '40px' }}><input type="checkbox" /></th>
-                                <th style={{ padding: '16px 24px', fontSize: '0.8rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>User</th>
-                                <th style={{ padding: '16px 24px', fontSize: '0.8rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Resource</th>
-                                <th style={{ padding: '16px 24px', fontSize: '0.8rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Date & Time</th>
-                                <th style={{ padding: '16px 24px', fontSize: '0.8rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</th>
-                                <th style={{ padding: '16px 24px', fontSize: '0.8rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Actions</th>
+                                <th style={{ padding: '16px 24px', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>User</th>
+                                <th style={{ padding: '16px 24px', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Resource</th>
+                                <th style={{ padding: '16px 24px', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Date &amp; Time</th>
+                                <th style={{ padding: '16px 24px', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</th>
+                                <th style={{ padding: '16px 24px', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {loading ? (
-                                <tr><td colSpan="6" style={{ padding: '32px', textAlign: 'center', color: '#64748b' }}>Loading real-time data...</td></tr>
+                                <tr><td colSpan="6" style={{ padding: '32px', textAlign: 'center', color: '#64748b', fontSize: '0.95rem', fontWeight: '500' }}>Loading real-time data...</td></tr>
                             ) : filteredBookings.length === 0 ? (
-                                <tr><td colSpan="6" style={{ padding: '32px', textAlign: 'center', color: '#64748b' }}>No bookings found.</td></tr>
+                                <tr><td colSpan="6" style={{ padding: '32px', textAlign: 'center', color: '#64748b', fontSize: '0.95rem', fontWeight: '500' }}>No bookings found.</td></tr>
                             ) : (
                                 filteredBookings.map((booking) => {
                                     const { date, time } = formatDateTime(booking.startTime, booking.endTime);
                                     const statusStyle = getStatusStyles(booking.status);
                                     
                                     return (
-                                        <tr key={booking.id} style={{ borderBottom: '1px solid #f1f5f9', transition: 'background-color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'} onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                                        <tr key={booking.id} style={{ borderBottom: '1px solid #e2e8f0', transition: 'background-color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'} onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                                             <td style={{ padding: '16px 24px' }}><input type="checkbox" /></td>
                                             <td style={{ padding: '16px 24px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#e2e8f0', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.9rem' }}>
+                                                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#f8fafc', color: '#334155', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '600', fontSize: '0.95rem' }}>
                                                         {getInitials(booking.user?.name)}
                                                     </div>
                                                     <div>
-                                                        <div style={{ fontWeight: '600', color: '#1e293b', fontSize: '0.95rem' }}>{booking.user?.name || 'Unknown User'}</div>
-                                                        <div style={{ color: '#64748b', fontSize: '0.85rem' }}>{booking.user?.email || 'No email provided'}</div>
+                                                        <div style={{ fontWeight: '600', color: '#0f172a', fontSize: '0.95rem' }}>{booking.user?.name || 'Unknown User'}</div>
+                                                        <div style={{ color: '#64748b', fontSize: '0.75rem', fontWeight: '500' }}>{booking.user?.email || 'No email provided'}</div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td style={{ padding: '16px 24px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                                     <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: statusStyle.dot }}></div>
-                                                    <span style={{ fontWeight: '500', color: '#334155' }}>{booking.resource?.name || 'Unknown Resource'}</span>
+                                                    <span style={{ fontWeight: '500', color: '#334155', fontSize: '0.95rem' }}>{booking.resource?.name || 'Unknown Resource'}</span>
                                                 </div>
                                             </td>
                                             <td style={{ padding: '16px 24px' }}>
                                                 <div style={{ fontWeight: '600', color: '#334155', fontSize: '0.95rem' }}>{date}</div>
-                                                <div style={{ color: '#64748b', fontSize: '0.85rem' }}>{time}</div>
+                                                <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: '500' }}>{time}</div>
                                             </td>
                                             <td style={{ padding: '16px 24px' }}>
                                                 <span style={{ 
                                                     backgroundColor: statusStyle.bg, 
                                                     color: statusStyle.color, 
                                                     padding: '4px 12px', 
-                                                    borderRadius: '9999px',
+                                                    borderRadius: '8px',
                                                     fontSize: '0.75rem',
                                                     fontWeight: '700',
-                                                    letterSpacing: '0.05em'
+                                                    letterSpacing: '0.05em',
+                                                    textTransform: 'uppercase',
+                                                    border: `1px solid ${statusStyle.bg === '#f8fafc' ? '#e2e8f0' : statusStyle.color}`
                                                 }}>
                                                     {booking.status}
                                                 </span>
@@ -243,18 +247,24 @@ const AdminBookings = () => {
                                                         <>
                                                             <button 
                                                                 onClick={() => updateBookingStatus(booking.id, 'APPROVED')}
-                                                                style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', backgroundColor: '#10b981', color: 'white', fontWeight: '600', cursor: 'pointer', fontSize: '0.85rem', boxShadow: '0 2px 4px rgba(16, 185, 129, 0.2)' }}
+                                                                style={{ padding: '6px 16px', borderRadius: '8px', border: '1px solid #059669', backgroundColor: '#ffffff', color: '#059669', fontWeight: '600', cursor: 'pointer', fontSize: '0.85rem' }}
+                                                                onMouseOver={e => { e.currentTarget.style.backgroundColor = '#ecfdf5'; }}
+                                                                onMouseOut={e => { e.currentTarget.style.backgroundColor = '#ffffff'; }}
                                                             >Approve</button>
                                                             <button 
                                                                 onClick={() => updateBookingStatus(booking.id, 'REJECTED')}
-                                                                style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', backgroundColor: '#ef4444', color: 'white', fontWeight: '600', cursor: 'pointer', fontSize: '0.85rem', boxShadow: '0 2px 4px rgba(239, 68, 68, 0.2)' }}
+                                                                style={{ padding: '6px 16px', borderRadius: '8px', border: '1px solid #dc2626', backgroundColor: '#ffffff', color: '#dc2626', fontWeight: '600', cursor: 'pointer', fontSize: '0.85rem' }}
+                                                                onMouseOver={e => { e.currentTarget.style.backgroundColor = '#fef2f2'; }}
+                                                                onMouseOut={e => { e.currentTarget.style.backgroundColor = '#ffffff'; }}
                                                             >Reject</button>
                                                         </>
                                                     )}
                                                     {booking.status === 'REJECTED' && (
                                                         <button 
                                                             onClick={() => updateBookingStatus(booking.id, 'PENDING')}
-                                                            style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #cbd5e1', backgroundColor: '#f8fafc', color: '#475569', fontWeight: '600', cursor: 'pointer', fontSize: '0.85rem' }}
+                                                            style={{ padding: '6px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', color: '#334155', fontWeight: '600', cursor: 'pointer', fontSize: '0.85rem' }}
+                                                            onMouseOver={e => { e.currentTarget.style.backgroundColor = '#f8fafc'; }}
+                                                            onMouseOut={e => { e.currentTarget.style.backgroundColor = '#ffffff'; }}
                                                         >Review</button>
                                                     )}
                                                 </div>

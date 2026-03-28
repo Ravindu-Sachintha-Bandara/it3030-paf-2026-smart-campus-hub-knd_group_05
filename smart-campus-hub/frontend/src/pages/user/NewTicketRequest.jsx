@@ -51,24 +51,24 @@ const NewTicketRequest = () => {
     };
 
     return (
-        <div style={{ padding: '40px', backgroundColor: '#f8fafc', minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
+        <div style={{ padding: '32px', backgroundColor: '#f8fafc', minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif', boxSizing: 'border-box' }}>
             
             {/* Page Header */}
             <div style={{ marginBottom: '40px', maxWidth: '900px', margin: '0 auto 40px auto' }}>
-                <h1 style={{ margin: 0, fontSize: '2.5rem', color: '#1e293b', fontWeight: '900', letterSpacing: '-1px' }}>
+                <h1 style={{ margin: 0, fontSize: '2rem', color: '#0f172a', fontWeight: '800', letterSpacing: '-0.025em' }}>
                     New Ticket Request
                 </h1>
-                <p style={{ margin: '8px 0 0 0', color: '#64748b', fontSize: '1.05rem' }}>
+                <p style={{ margin: '8px 0 0 0', color: '#64748b', fontSize: '1rem', fontWeight: '500' }}>
                     Submit a new support ticket or report an incident. Fill in the details below to initiate the request.
                 </p>
             </div>
 
             {/* Main Form Card */}
             <div style={{ 
-                backgroundColor: 'white', 
-                borderRadius: '16px', 
-                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05)', 
-                border: '1px solid #f1f5f9',
+                backgroundColor: '#ffffff', 
+                borderRadius: '12px', 
+                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03)', 
+                border: '1px solid #e2e8f0',
                 padding: '40px',
                 maxWidth: '900px',
                 margin: '0 auto'
@@ -77,13 +77,13 @@ const NewTicketRequest = () => {
                 {/* Section Header */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
                     <div style={{ 
-                        width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#1e3a8a', 
-                        color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                        fontSize: '0.8rem', fontWeight: '900' 
+                        width: '32px', height: '32px', borderRadius: '8px', backgroundColor: '#0f172a', 
+                        color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                        fontSize: '0.85rem', fontWeight: '800' 
                     }}>
                         01
                     </div>
-                    <h2 style={{ margin: 0, fontSize: '1.1rem', color: '#1e3a8a', fontWeight: '800', letterSpacing: '1px' }}>
+                    <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#0f172a', fontWeight: '700' }}>
                         TICKET INFORMATION
                     </h2>
                 </div>
@@ -95,7 +95,7 @@ const NewTicketRequest = () => {
                         
                         {/* Subject */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                 Subject / Title
                             </label>
                             <input 
@@ -106,17 +106,17 @@ const NewTicketRequest = () => {
                                 placeholder="e.g. Wi-Fi Issue in Library"
                                 required
                                 style={{ 
-                                    padding: '12px 16px', borderRadius: '8px', border: '1px solid transparent', 
-                                    backgroundColor: '#f8fafc', color: '#1e293b', fontSize: '1rem', outline: 'none', transition: 'border 0.2s' 
+                                    padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', 
+                                    backgroundColor: '#ffffff', color: '#334155', fontSize: '0.95rem', fontWeight: '500', outline: 'none', transition: 'border 0.2s' 
                                 }}
-                                onFocus={(e) => e.target.style.border = '1px solid #cbd5e1'}
-                                onBlur={(e) => e.target.style.border = '1px solid transparent'}
+                                onFocus={(e) => e.target.style.border = '1px solid #94a3b8'}
+                                onBlur={(e) => e.target.style.border = '1px solid #e2e8f0'}
                             />
                         </div>
 
                         {/* Category */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                 Category
                             </label>
                             <select 
@@ -124,23 +124,24 @@ const NewTicketRequest = () => {
                                 value={formData.category}
                                 onChange={handleChange}
                                 style={{ 
-                                    padding: '12px 16px', borderRadius: '8px', border: '1px solid transparent', 
-                                    backgroundColor: '#f8fafc', color: '#1e293b', fontSize: '1rem', outline: 'none', transition: 'border 0.2s', cursor: 'pointer' 
+                                    padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', 
+                                    backgroundColor: '#ffffff', color: '#334155', fontSize: '0.95rem', fontWeight: '500', outline: 'none', transition: 'border 0.2s', cursor: 'pointer' 
                                 }}
-                                onFocus={(e) => e.target.style.border = '1px solid #cbd5e1'}
-                                onBlur={(e) => e.target.style.border = '1px solid transparent'}
+                                onFocus={(e) => e.target.style.border = '1px solid #94a3b8'}
+                                onBlur={(e) => e.target.style.border = '1px solid #e2e8f0'}
                             >
-                                <option value="Hardware">Hardware</option>
-                                <option value="Software">Software</option>
-                                <option value="Network">Network</option>
-                                <option value="Facility Maintenance">Facility Maintenance</option>
-                                <option value="Other">Other</option>
+                                <option value="Facilities">Facilities</option>
+                                <option value="IT & Equipment">IT & Equipment</option>
+                                <option value="Academic & Exams">Academic & Exams</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Student Service">Student Service</option>
+                                <option value="Others">Others</option>
                             </select>
                         </div>
 
                         {/* Location */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                 Location (Building/Room)
                             </label>
                             <input 
@@ -150,17 +151,17 @@ const NewTicketRequest = () => {
                                 onChange={handleChange}
                                 placeholder="e.g. Science North, Floor 3"
                                 style={{ 
-                                    padding: '12px 16px', borderRadius: '8px', border: '1px solid transparent', 
-                                    backgroundColor: '#f8fafc', color: '#1e293b', fontSize: '1rem', outline: 'none', transition: 'border 0.2s' 
+                                    padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', 
+                                    backgroundColor: '#ffffff', color: '#334155', fontSize: '0.95rem', fontWeight: '500', outline: 'none', transition: 'border 0.2s' 
                                 }}
-                                onFocus={(e) => e.target.style.border = '1px solid #cbd5e1'}
-                                onBlur={(e) => e.target.style.border = '1px solid transparent'}
+                                onFocus={(e) => e.target.style.border = '1px solid #94a3b8'}
+                                onBlur={(e) => e.target.style.border = '1px solid #e2e8f0'}
                             />
                         </div>
 
                         {/* Priority */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                 Priority
                             </label>
                             <select 
@@ -168,11 +169,11 @@ const NewTicketRequest = () => {
                                 value={formData.priority}
                                 onChange={handleChange}
                                 style={{ 
-                                    padding: '12px 16px', borderRadius: '8px', border: '1px solid transparent', 
-                                    backgroundColor: '#f8fafc', color: '#1e293b', fontSize: '1rem', outline: 'none', transition: 'border 0.2s', cursor: 'pointer' 
+                                    padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', 
+                                    backgroundColor: '#ffffff', color: '#334155', fontSize: '0.95rem', fontWeight: '500', outline: 'none', transition: 'border 0.2s', cursor: 'pointer' 
                                 }}
-                                onFocus={(e) => e.target.style.border = '1px solid #cbd5e1'}
-                                onBlur={(e) => e.target.style.border = '1px solid transparent'}
+                                onFocus={(e) => e.target.style.border = '1px solid #94a3b8'}
+                                onBlur={(e) => e.target.style.border = '1px solid #e2e8f0'}
                             >
                                 <option value="Low">Low</option>
                                 <option value="Normal">Normal</option>
@@ -183,7 +184,7 @@ const NewTicketRequest = () => {
 
                         {/* Description - Full Width */}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', gridColumn: '1 / -1' }}>
-                            <label style={{ fontSize: '0.75rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                            <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                 Description
                             </label>
                             <textarea 
@@ -194,42 +195,42 @@ const NewTicketRequest = () => {
                                 rows="6"
                                 required
                                 style={{ 
-                                    padding: '16px', borderRadius: '8px', border: '1px solid transparent', 
-                                    backgroundColor: '#f8fafc', color: '#1e293b', fontSize: '1rem', outline: 'none', transition: 'border 0.2s', resize: 'vertical' 
+                                    padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0', 
+                                    backgroundColor: '#ffffff', color: '#334155', fontSize: '0.95rem', fontWeight: '500', outline: 'none', transition: 'border 0.2s', resize: 'vertical' 
                                 }}
-                                onFocus={(e) => e.target.style.border = '1px solid #cbd5e1'}
-                                onBlur={(e) => e.target.style.border = '1px solid transparent'}
+                                onFocus={(e) => e.target.style.border = '1px solid #94a3b8'}
+                                onBlur={(e) => e.target.style.border = '1px solid #e2e8f0'}
                             ></textarea>
                         </div>
                     </div>
 
                     {/* Actions - Bottom Right Container */}
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '24px', paddingTop: '24px', borderTop: '1px solid #f1f5f9' }}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '24px', paddingTop: '24px', borderTop: '1px solid #e2e8f0' }}>
                         <button 
                             type="button"
                             onClick={() => navigate('/tickets')}
                             style={{ 
                                 background: 'transparent', border: 'none', color: '#64748b', 
-                                fontWeight: '800', fontSize: '0.95rem', cursor: 'pointer', letterSpacing: '0.5px', transition: 'color 0.2s' 
+                                fontWeight: '700', fontSize: '0.95rem', cursor: 'pointer', transition: 'color 0.2s' 
                             }}
-                            onMouseOver={(e) => e.currentTarget.style.color = '#1e293b'}
+                            onMouseOver={(e) => e.currentTarget.style.color = '#0f172a'}
                             onMouseOut={(e) => e.currentTarget.style.color = '#64748b'}
                         >
-                            CANCEL / DISCARD
+                            Cancel
                         </button>
 
                         <button 
                             type="submit"
                             disabled={submitting}
                             style={{ 
-                                backgroundColor: '#ea580c', color: 'white', padding: '14px 32px', borderRadius: '8px', 
-                                border: 'none', fontWeight: '800', fontSize: '1rem', cursor: submitting ? 'not-allowed' : 'pointer', 
-                                boxShadow: '0 4px 6px -1px rgba(234, 88, 12, 0.2)', letterSpacing: '0.5px', transition: 'background-color 0.2s' 
+                                backgroundColor: '#ea580c', color: '#ffffff', padding: '12px 24px', borderRadius: '8px', 
+                                border: 'none', fontWeight: '600', fontSize: '0.95rem', cursor: submitting ? 'not-allowed' : 'pointer', 
+                                boxShadow: '0 4px 6px -1px rgba(234, 88, 12, 0.2)', transition: 'background-color 0.2s' 
                             }}
                             onMouseOver={(e) => !submitting && (e.currentTarget.style.backgroundColor = '#c2410c')}
                             onMouseOut={(e) => !submitting && (e.currentTarget.style.backgroundColor = '#ea580c')}
                         >
-                            {submitting ? 'SUBMITTING...' : 'SUBMIT TICKET'}
+                            {submitting ? 'Submitting...' : 'Submit Ticket'}
                         </button>
                     </div>
 

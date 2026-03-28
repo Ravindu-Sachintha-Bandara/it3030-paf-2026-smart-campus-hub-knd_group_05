@@ -17,21 +17,18 @@ const Layout = () => {
         navigate('/login');
     };
 
-    const commonItems = [
-        { path: '/tickets', label: 'Tickets' },
-        { path: '/resources', label: 'Resources' }
-    ];
-
     const adminItems = [
-        { path: '/admin/dashboard', label: 'Admin Dashboard' },
+        { path: '/admin/dashboard', label: 'Dashboard' },
         { path: '/admin/bookings', label: 'Bookings' },
-        ...commonItems
+        { path: '/admin/tickets', label: 'Tickets' },
+        { path: '/resources', label: 'Resources' }
     ];
 
     const userItems = [
         { path: '/user/dashboard', label: 'Dashboard' },
         { path: '/bookings', label: 'Bookings' },
-        ...commonItems
+        { path: '/tickets', label: 'Tickets' },
+        { path: '/resources', label: 'Resources' }
     ];
 
     const navItems = user?.role === 'ADMIN' ? adminItems : userItems;

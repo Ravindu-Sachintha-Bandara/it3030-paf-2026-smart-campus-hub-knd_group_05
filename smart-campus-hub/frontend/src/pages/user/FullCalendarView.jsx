@@ -32,8 +32,8 @@ const FullCalendarView = () => {
                         start: booking.startTime,
                         end: booking.endTime,
                         // Visual Marking: Orange for YOU, Navy for OTHERS
-                        backgroundColor: isMine ? '#ea580c' : '#1e293b',
-                        borderColor: isMine ? '#ea580c' : '#1e293b',
+                        backgroundColor: isMine ? '#ea580c' : '#0f172a',
+                        borderColor: isMine ? '#ea580c' : '#0f172a',
                         textColor: 'white',
                         extendedProps: {
                             resourceId: booking.resource?.id,
@@ -61,30 +61,30 @@ const FullCalendarView = () => {
     }, [user]);
 
     return (
-        <div style={{ padding: '24px', backgroundColor: '#f8fafc', minHeight: '100vh', width: '100%', boxSizing: 'border-box' }}>
+        <div style={{ padding: '32px', backgroundColor: '#f8fafc', minHeight: '100vh', width: '100%', boxSizing: 'border-box', fontFamily: 'Inter, system-ui, sans-serif' }}>
             <div style={{ 
-                backgroundColor: 'white', 
+                backgroundColor: '#ffffff', 
                 padding: '32px', 
-                borderRadius: '16px', 
-                boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
-                border: '1px solid #f1f5f9'
+                borderRadius: '12px', 
+                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03)',
+                border: '1px solid #e2e8f0'
             }}>
                 {/* Header with Legend */}
                 <header style={{ marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
                     <div>
-                        <h1 style={{ margin: 0, color: '#1e293b', fontSize: '1.8rem', fontWeight: '800' }}>Schedule Explorer</h1>
-                        <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: '1rem' }}>Live campus resource availability and your personal sessions.</p>
+                        <h1 style={{ margin: 0, color: '#0f172a', fontSize: '2rem', fontWeight: '800', letterSpacing: '-0.025em' }}>Schedule Explorer</h1>
+                        <p style={{ margin: '8px 0 0 0', color: '#64748b', fontSize: '1rem', fontWeight: '500' }}>Live campus resource availability and your personal sessions.</p>
                     </div>
                     
                     {/* The Legend */}
-                    <div style={{ display: 'flex', gap: '20px', backgroundColor: '#f8fafc', padding: '12px 20px', borderRadius: '12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <div style={{ width: '14px', height: '14px', backgroundColor: '#ea580c', borderRadius: '4px' }}></div>
-                            <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#1e293b' }}>MY BOOKINGS</span>
+                    <div style={{ display: 'flex', gap: '24px', backgroundColor: '#f8fafc', padding: '12px 24px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ width: '12px', height: '12px', backgroundColor: '#ea580c', borderRadius: '4px' }}></div>
+                            <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', letterSpacing: '0.05em' }}>MY BOOKINGS</span>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <div style={{ width: '14px', height: '14px', backgroundColor: '#1e293b', borderRadius: '4px' }}></div>
-                            <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#1e293b' }}>CAMPUS SESSIONS</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ width: '12px', height: '12px', backgroundColor: '#0f172a', borderRadius: '4px' }}></div>
+                            <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', letterSpacing: '0.05em' }}>CAMPUS SESSIONS</span>
                         </div>
                     </div>
                 </header>
@@ -148,20 +148,26 @@ const FullCalendarView = () => {
             {/* Custom Calendar Theming to match the Architect UI */}
             <style>{`
                 .fc { font-family: inherit; }
-                .fc-toolbar-title { font-size: 1.4rem !important; color: #1e293b; font-weight: 800; }
+                .fc-toolbar-title { font-size: 1.25rem !important; color: #0f172a; font-weight: 700; }
                 .fc-button { 
-                    background-color: #f1f5f9 !important; 
+                    background-color: #ffffff !important; 
                     border: 1px solid #e2e8f0 !important; 
-                    color: #1e293b !important; 
-                    font-weight: 700 !important; 
+                    color: #334155 !important; 
+                    font-weight: 600 !important; 
+                    font-size: 0.95rem !important;
                     text-transform: capitalize !important;
                     transition: all 0.2s !important;
+                    box-shadow: none !important;
                 }
-                .fc-button:hover { background-color: #e2e8f0 !important; }
-                .fc-button-active { background-color: #1e293b !important; color: white !important; border-color: #1e293b !important; }
+                .fc-button:hover { background-color: #f8fafc !important; color: #0f172a !important; }
+                .fc-button-active { background-color: #0f172a !important; color: white !important; border-color: #0f172a !important; }
                 .fc-daygrid-event { border-radius: 6px !important; padding: 4px 8px !important; font-weight: 600 !important; border: none !important; }
-                .fc-col-header-cell { padding: 12px 0 !important; background-color: #f8fafc; color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; }
+                .fc-theme-standard td, .fc-theme-standard th { border: 1px solid #e2e8f0 !important; }
+                .fc-col-header-cell { padding: 12px 0 !important; background-color: #f8fafc !important; color: #64748b !important; font-weight: 700 !important; text-transform: uppercase !important; font-size: 0.75rem !important; letter-spacing: 0.05em !important; }
+                .fc-scrollgrid { border: 1px solid #e2e8f0 !important; border-radius: 8px; overflow: hidden; }
                 .fc-day-today { background-color: #fffaf0 !important; }
+                .fc-daygrid-day-number { color: #334155 !important; font-weight: 500 !important; font-size: 0.95rem !important; padding: 8px !important; }
+                .fc-day-other .fc-daygrid-day-number { color: #94a3b8 !important; }
             `}</style>
         </div>
     );

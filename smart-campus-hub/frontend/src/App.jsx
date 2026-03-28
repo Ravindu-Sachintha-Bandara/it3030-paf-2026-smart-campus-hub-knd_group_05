@@ -10,7 +10,8 @@ import FullCalendarView from './pages/user/FullCalendarView'; // NEW CALENDAR IM
 import Bookings from './pages/Bookings';
 import NewBookingRequest from './pages/user/NewBookingRequest'; // NEW IMPORT
 import Resources from './pages/Resources';
-import Tickets from './pages/Tickets';
+import AdminTickets from './pages/admin/AdminTickets'; // NEW IMPORT
+import MyTickets from './pages/user/MyTickets'; // NEW IMPORT
 import NewTicketRequest from './pages/user/NewTicketRequest'; // NEW IMPORT
 import Notifications from './pages/Notifications';
 import Layout from './components/Layout';
@@ -33,6 +34,7 @@ function App() {
             {/* Admin Routes */}
             <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
             <Route path="/admin/bookings" element={<AdminRoute><AdminBookings /></AdminRoute>} />
+            <Route path="/admin/tickets" element={<AdminRoute><AdminTickets /></AdminRoute>} />
 
             {/* User Routes */}
             <Route path="/user/dashboard" element={<UserRoute><UserDashboard /></UserRoute>} />
@@ -42,7 +44,7 @@ function App() {
             <Route path="/bookings/new" element={<UserRoute><NewBookingRequest /></UserRoute>} />
             <Route path="/user/calendar" element={<UserRoute><FullCalendarView /></UserRoute>} />
             
-            <Route path="/tickets" element={<UserRoute><Tickets /></UserRoute>} />
+            <Route path="/tickets" element={<UserRoute><MyTickets /></UserRoute>} />
             <Route path="/tickets/new" element={<UserRoute><NewTicketRequest /></UserRoute>} />
             <Route path="/resources" element={<UserRoute><Resources /></UserRoute>} />
             <Route path="/notifications" element={<UserRoute><Notifications /></UserRoute>} />

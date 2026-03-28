@@ -87,11 +87,11 @@ const MyBookings = () => {
 
     const getStatusStyle = (status) => {
         switch (status) {
-            case 'APPROVED': return { bg: '#ecfdf5', color: '#10b981', border: '#bbf7d0' };
-            case 'PENDING': return { bg: '#fff7ed', color: '#ea580c', border: '#fed7aa' };
-            case 'REJECTED': return { bg: '#fef2f2', color: '#ef4444', border: '#fecaca' };
-            case 'CANCELLED': return { bg: '#f1f5f9', color: '#64748b', border: '#e2e8f0' };
-            default: return { bg: '#f8fafc', color: '#94a3b8', border: '#e2e8f0' };
+            case 'APPROVED': return { bg: '#ecfdf5', color: '#059669', border: '#e2e8f0' };
+            case 'PENDING': return { bg: '#fffbeb', color: '#d97706', border: '#e2e8f0' };
+            case 'REJECTED': return { bg: '#fef2f2', color: '#dc2626', border: '#e2e8f0' };
+            case 'CANCELLED': return { bg: '#f8fafc', color: '#64748b', border: '#e2e8f0' };
+            default: return { bg: '#f8fafc', color: '#334155', border: '#e2e8f0' };
         }
     };
 
@@ -115,23 +115,23 @@ const MyBookings = () => {
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                 <div>
-                    <h1 style={{ margin: 0, fontSize: '2rem', color: '#1e293b', fontWeight: '800' }}>My Bookings</h1>
+                    <h1 style={{ margin: 0, fontSize: '2rem', color: '#0f172a', fontWeight: '800', letterSpacing: '-0.025em' }}>My Bookings</h1>
                     <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: '1rem' }}>Manage your campus resource reservations and requests.</p>
                 </div>
                 <button style={{ 
-                    backgroundColor: '#ea580c', color: 'white', border: 'none', borderRadius: '8px', 
-                    padding: '12px 24px', fontWeight: 'bold', fontSize: '0.9rem', cursor: 'pointer',
-                    boxShadow: '0 4px 6px -1px rgba(234, 88, 12, 0.2)'
+                    backgroundColor: '#ea580c', color: '#ffffff', border: 'none', borderRadius: '8px', 
+                    padding: '10px 20px', fontWeight: '600', cursor: 'pointer',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)'
                 }}>
                     + NEW REQUEST
                 </button>
             </div>
 
             {/* Main Content Card */}
-            <div style={{ backgroundColor: 'white', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0', overflow: 'hidden', marginBottom: '32px' }}>
+            <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0', overflow: 'hidden', marginBottom: '32px' }}>
                 
                 {/* Tabs & Controls */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', padding: '0 24px', backgroundColor: '#fafafa', flexWrap: 'wrap', gap: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', padding: '0 24px', backgroundColor: '#f8fafc', flexWrap: 'wrap', gap: '16px' }}>
                     
                     <div style={{ display: 'flex', gap: '32px' }}>
                         {['All', 'Pending', 'Approved', 'Cancelled'].map(tab => (
@@ -142,9 +142,10 @@ const MyBookings = () => {
                                     padding: '20px 0', 
                                     cursor: 'pointer', 
                                     fontWeight: activeTab === tab ? '700' : '500', 
-                                    color: activeTab === tab ? '#1e293b' : '#64748b',
-                                    borderBottom: activeTab === tab ? '3px solid #1e293b' : '3px solid transparent',
-                                    transition: '0.2s'
+                                    color: activeTab === tab ? '#0f172a' : '#64748b',
+                                    borderBottom: activeTab === tab ? '3px solid #0f172a' : '3px solid transparent',
+                                    transition: '0.2s',
+                                    fontSize: '0.95rem'
                                 }}
                             >
                                 {tab}
@@ -158,9 +159,9 @@ const MyBookings = () => {
                             placeholder="Search requests..." 
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
-                            style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', width: '220px', fontSize: '0.9rem' }}
+                            style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', outline: 'none', width: '220px', fontSize: '0.95rem', color: '#334155' }}
                         />
-                        <button style={{ padding: '10px 16px', backgroundColor: 'white', border: '1px solid #cbd5e1', borderRadius: '8px', color: '#1e293b', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <button style={{ padding: '10px 16px', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#334155', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
                             Filters
                         </button>
@@ -171,7 +172,7 @@ const MyBookings = () => {
                 <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead>
-                            <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                            <tr style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e2e8f0' }}>
                                 <th style={{ padding: '16px 24px', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Resource</th>
                                 <th style={{ padding: '16px 24px', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Date</th>
                                 <th style={{ padding: '16px 24px', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Time</th>
@@ -182,42 +183,42 @@ const MyBookings = () => {
                         </thead>
                         <tbody>
                             {loading ? (
-                                <tr><td colSpan="6" style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading your reservations...</td></tr>
+                                <tr><td colSpan="6" style={{ padding: '40px', textAlign: 'center', color: '#64748b', fontSize: '0.95rem', fontWeight: '500' }}>Loading your reservations...</td></tr>
                             ) : filteredBookings.length === 0 ? (
-                                <tr><td colSpan="6" style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>No bookings match your current view.</td></tr>
+                                <tr><td colSpan="6" style={{ padding: '40px', textAlign: 'center', color: '#64748b', fontSize: '0.95rem', fontWeight: '500' }}>No bookings match your current view.</td></tr>
                             ) : (
                                 filteredBookings.map(booking => {
                                     const { date, time } = formatDateTime(booking.startTime, booking.endTime);
                                     const statusStyle = getStatusStyle(booking.status);
                                     
                                     return (
-                                        <tr key={booking.id} style={{ borderBottom: '1px solid #f1f5f9', transition: '0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#f8fafc'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}>
+                                        <tr key={booking.id} style={{ borderBottom: '1px solid #e2e8f0', transition: '0.2s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#f8fafc'} onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}>
                                             <td style={{ padding: '16px 24px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                    <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#e0e7ff', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                                                    <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: '#e2e8f0', color: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '600' }}>
                                                         {booking.resource?.name?.substring(0,2).toUpperCase() || 'RS'}
                                                     </div>
                                                     <div>
-                                                        <div style={{ fontWeight: '700', color: '#1e293b', fontSize: '0.95rem' }}>{booking.resource?.name || 'Unknown Resource'}</div>
-                                                        <div style={{ color: '#64748b', fontSize: '0.8rem' }}>{booking.resource?.location || `ID: ${booking.resourceId || 'N/A'}`}</div>
+                                                        <div style={{ fontWeight: '600', color: '#0f172a', fontSize: '0.95rem' }}>{booking.resource?.name || 'Unknown Resource'}</div>
+                                                        <div style={{ color: '#64748b', fontSize: '0.75rem', fontWeight: '500' }}>{booking.resource?.location || `ID: ${booking.resourceId || 'N/A'}`}</div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td style={{ padding: '16px 24px' }}>
-                                                <div style={{ fontWeight: '600', color: '#334155', fontSize: '0.9rem' }}>{date}</div>
+                                                <div style={{ fontWeight: '500', color: '#334155', fontSize: '0.95rem' }}>{date}</div>
                                             </td>
                                             <td style={{ padding: '16px 24px' }}>
-                                                <div style={{ color: '#64748b', fontSize: '0.9rem', fontWeight: '500' }}>{time}</div>
+                                                <div style={{ color: '#64748b', fontSize: '0.95rem', fontWeight: '500' }}>{time}</div>
                                             </td>
                                             <td style={{ padding: '16px 24px' }}>
-                                                <div style={{ color: '#475569', fontSize: '0.9rem', fontStyle: 'italic', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                <div style={{ color: '#334155', fontSize: '0.95rem', fontWeight: '500', maxWidth: '200px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                     {booking.purpose || 'No purpose specified'}
                                                 </div>
                                             </td>
                                             <td style={{ padding: '16px 24px' }}>
                                                 <span style={{ 
                                                     backgroundColor: statusStyle.bg, color: statusStyle.color, border: `1px solid ${statusStyle.border}`,
-                                                    padding: '4px 12px', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '0.05em'
+                                                    padding: '4px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase'
                                                 }}>
                                                     {booking.status}
                                                 </span>
@@ -227,18 +228,18 @@ const MyBookings = () => {
                                                     <button 
                                                         onClick={() => cancelBooking(booking.id)}
                                                         style={{ 
-                                                            padding: '6px 16px', backgroundColor: 'white', color: '#ef4444', 
-                                                            border: '1px solid #ef4444', borderRadius: '6px', fontWeight: '600', 
-                                                            fontSize: '0.8rem', cursor: 'pointer', transition: '0.2s'
+                                                            padding: '6px 16px', backgroundColor: '#ffffff', color: '#dc2626', 
+                                                            border: '1px solid #e2e8f0', borderRadius: '8px', fontWeight: '600', 
+                                                            fontSize: '0.95rem', cursor: 'pointer', transition: '0.2s'
                                                         }}
-                                                        onMouseOver={e => { e.currentTarget.style.backgroundColor = '#fef2f2'; }}
-                                                        onMouseOut={e => { e.currentTarget.style.backgroundColor = 'white'; }}
+                                                        onMouseOver={e => { e.currentTarget.style.backgroundColor = '#fef2f2'; e.currentTarget.style.borderColor = '#dc2626'; }}
+                                                        onMouseOut={e => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                                                     >
                                                         CANCEL
                                                     </button>
                                                 )}
                                                 {booking.status !== 'APPROVED' && booking.status !== 'PENDING' && (
-                                                    <span style={{ color: '#cbd5e1', fontSize: '0.9rem' }}>-</span>
+                                                    <span style={{ color: '#e2e8f0', fontSize: '0.95rem' }}>-</span>
                                                 )}
                                             </td>
                                         </tr>
@@ -252,32 +253,32 @@ const MyBookings = () => {
 
             {/* KPI Cards (Bottom) */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
-                <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
-                    <p style={{ margin: '0 0 8px 0', fontSize: '0.75rem', fontWeight: 'bold', color: '#64748b', letterSpacing: '0.05em' }}>TOTAL HOURS</p>
-                    <h2 style={{ margin: 0, fontSize: '2.5rem', fontWeight: '800', color: '#1e293b' }}>{totalHours.toFixed(1)} <span style={{fontSize: '1rem', color: '#94a3b8', fontWeight: '600'}}>hrs</span></h2>
+                <div style={{ backgroundColor: '#ffffff', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0' }}>
+                    <p style={{ margin: '0 0 8px 0', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', letterSpacing: '0.05em', textTransform: 'uppercase' }}>TOTAL HOURS</p>
+                    <h2 style={{ margin: 0, fontSize: '2.5rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.025em' }}>{totalHours.toFixed(1)} <span style={{fontSize: '0.95rem', color: '#64748b', fontWeight: '500'}}>hrs</span></h2>
                 </div>
                 
-                <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
-                    <p style={{ margin: '0 0 8px 0', fontSize: '0.75rem', fontWeight: 'bold', color: '#64748b', letterSpacing: '0.05em' }}>ACTIVE REQUESTS</p>
-                    <h2 style={{ margin: 0, fontSize: '2.5rem', fontWeight: '800', color: '#ea580c' }}>{activeRequests}</h2>
+                <div style={{ backgroundColor: '#ffffff', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0' }}>
+                    <p style={{ margin: '0 0 8px 0', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', letterSpacing: '0.05em', textTransform: 'uppercase' }}>ACTIVE REQUESTS</p>
+                    <h2 style={{ margin: 0, fontSize: '2.5rem', fontWeight: '800', color: '#ea580c', letterSpacing: '-0.025em' }}>{activeRequests}</h2>
                 </div>
 
-                <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
-                    <p style={{ margin: '0 0 8px 0', fontSize: '0.75rem', fontWeight: 'bold', color: '#64748b', letterSpacing: '0.05em' }}>UTILIZATION RATE</p>
-                    <h2 style={{ margin: 0, fontSize: '2.5rem', fontWeight: '800', color: '#1e293b' }}>82%</h2>
+                <div style={{ backgroundColor: '#ffffff', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0' }}>
+                    <p style={{ margin: '0 0 8px 0', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', letterSpacing: '0.05em', textTransform: 'uppercase' }}>UTILIZATION RATE</p>
+                    <h2 style={{ margin: 0, fontSize: '2.5rem', fontWeight: '800', color: '#0f172a', letterSpacing: '-0.025em' }}>82%</h2>
                 </div>
 
-                <div style={{ backgroundColor: '#1e293b', padding: '24px', borderRadius: '16px', boxShadow: '0 10px 15px -3px rgba(30, 41, 59, 0.4)', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                    <p style={{ margin: '0 0 8px 0', fontSize: '0.75rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.05em' }}>NEXT RESERVATION</p>
+                <div style={{ backgroundColor: '#0f172a', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', color: '#ffffff', border: '1px solid #0f172a', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <p style={{ margin: '0 0 8px 0', fontSize: '0.75rem', fontWeight: '700', color: '#64748b', letterSpacing: '0.05em', textTransform: 'uppercase' }}>NEXT RESERVATION</p>
                     {nextRes ? (
                         <>
-                            <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '700', color: 'white' }}>{nextRes.resource?.name || 'Campus Resource'}</h3>
-                            <p style={{ margin: '4px 0 0 0', fontSize: '0.95rem', color: '#cbd5e1' }}>{formatNextResTime(nextRes.startTime)}</p>
+                            <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '700', color: '#ffffff' }}>{nextRes.resource?.name || 'Campus Resource'}</h3>
+                            <p style={{ margin: '4px 0 0 0', fontSize: '0.95rem', color: '#f8fafc', fontWeight: '500' }}>{formatNextResTime(nextRes.startTime)}</p>
                         </>
                     ) : (
                         <>
-                            <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '700', color: '#94a3b8' }}>No Upcoming</h3>
-                            <p style={{ margin: '4px 0 0 0', fontSize: '0.95rem', color: '#475569' }}>-</p>
+                            <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: '700', color: '#64748b' }}>No Upcoming</h3>
+                            <p style={{ margin: '4px 0 0 0', fontSize: '0.95rem', color: '#64748b', fontWeight: '500' }}>-</p>
                         </>
                     )}
                 </div>

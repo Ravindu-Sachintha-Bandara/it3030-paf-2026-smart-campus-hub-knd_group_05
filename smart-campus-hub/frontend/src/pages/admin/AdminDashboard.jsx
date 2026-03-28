@@ -83,17 +83,17 @@ const AdminDashboard = () => {
     const maxWeeklyBookings = Math.max(...dashboardData.weeklyData, 1);
 
     return (
-        <div style={{ padding: '24px', backgroundColor: '#f8fafc', minHeight: '100vh', width: '100%', boxSizing: 'border-box' }}>
+        <div style={{ padding: '32px', backgroundColor: '#f8fafc', minHeight: '100vh', width: '100%', boxSizing: 'border-box', fontFamily: 'Inter, system-ui, sans-serif' }}>
             
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                 <div>
-                    <h1 style={{ color: '#0f172a', fontSize: '1.8rem', fontWeight: 'bold', margin: 0 }}>Administrative Intelligence</h1>
-                    <p style={{ color: '#64748b', margin: 0, marginTop: '4px' }}>Real-time oversight of campus operational throughput. Welcome, {user?.name || 'Admin'}!</p>
+                    <h1 style={{ color: '#0f172a', fontSize: '2rem', fontWeight: '800', margin: 0, letterSpacing: '-0.025em' }}>Administrative Intelligence</h1>
+                    <p style={{ color: '#64748b', margin: 0, marginTop: '8px', fontSize: '1rem', fontWeight: '500' }}>Real-time oversight of campus operational throughput. Welcome, {user?.name || 'Admin'}!</p>
                 </div>
-                <div style={{ display: 'flex', gap: '12px' }}>
-                    <button style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', backgroundColor: '#e2e8f0', color: '#334155', fontWeight: 'bold', cursor: 'pointer' }}>Assign Technician</button>
-                    <button onClick={() => navigate('/bookings')} style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', backgroundColor: '#0f172a', color: 'white', fontWeight: 'bold', cursor: 'pointer' }}>Approve Pending</button>
+                <div style={{ display: 'flex', gap: '16px' }}>
+                    <button style={{ padding: '10px 20px', borderRadius: '8px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', color: '#334155', fontWeight: '600', cursor: 'pointer', fontSize: '0.95rem' }}>Assign Technician</button>
+                    <button onClick={() => navigate('/bookings')} style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', backgroundColor: '#ea580c', color: '#ffffff', fontWeight: '600', cursor: 'pointer', fontSize: '0.95rem', boxShadow: '0 4px 6px -1px rgba(234, 88, 12, 0.2)' }}>Approve Pending</button>
                 </div>
             </div>
 
@@ -101,12 +101,12 @@ const AdminDashboard = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
                 
                 {/* Dynamic Bar Chart */}
-                <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
-                        <h3 style={{ margin: 0, color: '#0f172a' }}>Bookings This Week</h3>
-                        <span style={{ backgroundColor: '#e0e7ff', color: '#4338ca', padding: '4px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>LIVE DATA</span>
+                <div style={{ backgroundColor: '#ffffff', padding: '32px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px' }}>
+                        <h3 style={{ margin: 0, color: '#0f172a', fontSize: '1.25rem', fontWeight: '700' }}>Bookings This Week</h3>
+                        <span style={{ backgroundColor: '#eff6ff', color: '#2563eb', padding: '4px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '0.05em', border: '1px solid #bfdbfe' }}>LIVE DATA</span>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'flex-end', height: '200px', borderBottom: '2px solid #f1f5f9', paddingBottom: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'flex-end', height: '200px', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px' }}>
                         {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((day, i) => {
                             const count = dashboardData.weeklyData[i];
                             // Scale height based on highest day (max 160px)
@@ -116,7 +116,7 @@ const AdminDashboard = () => {
                             return (
                                 <div key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
                                     <div style={{ width: '12px', height: `${barHeight}px`, backgroundColor: isToday ? '#ea580c' : '#0f172a', borderRadius: '6px', transition: 'height 0.5s ease' }}></div>
-                                    <span style={{ fontSize: '0.8rem', color: isToday ? '#ea580c' : '#64748b', fontWeight: 'bold' }}>{day}</span>
+                                    <span style={{ fontSize: '0.75rem', color: isToday ? '#ea580c' : '#64748b', fontWeight: '700', letterSpacing: '0.05em' }}>{day}</span>
                                 </div>
                             );
                         })}
@@ -124,21 +124,21 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Dynamic Square Stat */}
-                <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-                     <h3 style={{ margin: 0, color: '#0f172a', marginBottom: '24px' }}>Ticket Distribution</h3>
+                <div style={{ backgroundColor: '#ffffff', padding: '32px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0' }}>
+                     <h3 style={{ margin: 0, color: '#0f172a', marginBottom: '32px', fontSize: '1.25rem', fontWeight: '700' }}>Ticket Distribution</h3>
                      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
-                            <div style={{ border: '16px solid #0f172a', borderRadius: '16px', width: '180px', height: '180px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderTopColor: '#ea580c', boxSizing: 'border-box' }}>
-                                <h1 style={{ margin: 0, fontSize: '3rem', color: '#0f172a' }}>{dashboardData.kpis.openTickets}</h1>
-                                <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.8rem', fontWeight: 'bold' }}>OPEN TICKETS</p>
+                            <div style={{ border: '12px solid #f8fafc', borderRadius: '50%', width: '180px', height: '180px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderTopColor: '#ea580c', boxSizing: 'border-box' }}>
+                                <h1 style={{ margin: 0, fontSize: '3rem', color: '#0f172a', fontWeight: '800', letterSpacing: '-0.025em' }}>{dashboardData.kpis.openTickets}</h1>
+                                <p style={{ margin: 0, color: '#64748b', fontSize: '0.75rem', fontWeight: '700', marginTop: '4px', letterSpacing: '0.05em' }}>OPEN TICKETS</p>
                             </div>
                      </div>
                 </div>
 
                 {/* Dynamic Progress Rows */}
-                <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-                    <h3 style={{ margin: 0, color: '#0f172a', marginBottom: '24px' }}>Top Booked Resources</h3>
+                <div style={{ backgroundColor: '#ffffff', padding: '32px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0' }}>
+                    <h3 style={{ margin: 0, color: '#0f172a', marginBottom: '32px', fontSize: '1.25rem', fontWeight: '700' }}>Top Booked Resources</h3>
                     {dashboardData.topResources.length === 0 ? (
-                        <p style={{ color: '#94a3b8', fontStyle: 'italic' }}>No bookings data available yet.</p>
+                        <p style={{ color: '#64748b', fontStyle: 'italic', fontSize: '0.95rem' }}>No bookings data available yet.</p>
                     ) : (
                         dashboardData.topResources.map((res, i) => {
                             // Max percentage based on highest booked item
@@ -146,12 +146,12 @@ const AdminDashboard = () => {
                             const percentage = (res.count / highestCount) * 100;
 
                             return (
-                                <div key={res.name} style={{ marginBottom: '16px' }}>
+                                <div key={res.name} style={{ marginBottom: '24px' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                        <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#0f172a' }}>{res.name}</span>
-                                        <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: '#0f172a' }}>{res.count} BOOKINGS</span>
+                                        <span style={{ fontSize: '0.95rem', fontWeight: '600', color: '#0f172a' }}>{res.name}</span>
+                                        <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', letterSpacing: '0.05em' }}>{res.count} BOOKINGS</span>
                                     </div>
-                                    <div style={{ width: '100%', height: '8px', backgroundColor: '#e2e8f0', borderRadius: '4px' }}>
+                                    <div style={{ width: '100%', height: '8px', backgroundColor: '#f8fafc', borderRadius: '4px', border: '1px solid #e2e8f0' }}>
                                         <div style={{ width: `${percentage}%`, height: '100%', backgroundColor: '#0f172a', borderRadius: '4px', transition: 'width 0.5s ease' }}></div>
                                     </div>
                                 </div>
@@ -161,21 +161,21 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Dynamic Queue */}
-                <div style={{ backgroundColor: '#f8fafc', padding: '24px', borderRadius: '12px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
-                        <h3 style={{ margin: 0, color: '#0f172a' }}>Pending Bookings</h3>
-                        <span onClick={() => navigate('/bookings')} style={{ fontSize: '0.8rem', color: '#ea580c', fontWeight: 'bold', cursor: 'pointer' }}>VIEW ALL</span>
+                <div style={{ backgroundColor: '#ffffff', padding: '32px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px' }}>
+                        <h3 style={{ margin: 0, color: '#0f172a', fontSize: '1.25rem', fontWeight: '700' }}>Pending Bookings</h3>
+                        <span onClick={() => navigate('/bookings')} style={{ fontSize: '0.75rem', color: '#ea580c', fontWeight: '700', cursor: 'pointer', letterSpacing: '0.05em' }}>VIEW ALL</span>
                     </div>
                     {dashboardData.pendingList.length === 0 ? (
-                        <p style={{ color: '#94a3b8', fontStyle: 'italic', textAlign: 'center', marginTop: '40px' }}>All caught up! No pending requests.</p>
+                        <p style={{ color: '#64748b', fontStyle: 'italic', textAlign: 'center', marginTop: '40px', fontSize: '0.95rem' }}>All caught up! No pending requests.</p>
                     ) : (
                         dashboardData.pendingList.map((booking, index) => (
-                            <div key={booking.id} style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', borderLeft: `4px solid ${index === 0 ? '#ea580c' : '#cbd5e1'}`, marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+                            <div key={booking.id} style={{ backgroundColor: '#f8fafc', padding: '16px 20px', borderRadius: '8px', border: '1px solid #e2e8f0', borderLeft: `4px solid ${index === 0 ? '#ea580c' : '#e2e8f0'}`, marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div>
-                                    <p style={{ margin: 0, fontWeight: 'bold', color: '#0f172a', fontSize: '0.9rem' }}>{booking.resource?.name || `Resource #${booking.resourceId}`}</p>
-                                    <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>Req by User #{booking.userId || 'Faculty'} • {booking.purpose || 'Pending Review'}</p>
+                                    <p style={{ margin: 0, fontWeight: '600', color: '#0f172a', fontSize: '0.95rem' }}>{booking.resource?.name || `Resource #${booking.resourceId}`}</p>
+                                    <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: '500' }}>Req by User #{booking.userId || 'Faculty'} • {booking.purpose || 'Pending Review'}</p>
                                 </div>
-                                <button onClick={() => navigate('/bookings')} style={{ padding: '6px 16px', backgroundColor: '#0f172a', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>View</button>
+                                <button onClick={() => navigate('/bookings')} style={{ padding: '8px 16px', backgroundColor: '#ffffff', color: '#334155', border: '1px solid #e2e8f0', borderRadius: '6px', fontWeight: '600', cursor: 'pointer', fontSize: '0.85rem' }}>View</button>
                             </div>
                         ))
                     )}
@@ -184,21 +184,21 @@ const AdminDashboard = () => {
 
             {/* Bottom KPIs */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginTop: '24px' }}>
-                <div onClick={() => navigate('/resources')} style={{ cursor: 'pointer', backgroundColor: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-                    <h1 style={{ margin: 0, fontSize: '2.5rem', color: '#0f172a' }}>{dashboardData.kpis.totalResources}</h1>
-                    <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.75rem', fontWeight: 'bold', marginTop: '8px' }}>TOTAL RESOURCES</p>
+                <div onClick={() => navigate('/resources')} style={{ cursor: 'pointer', backgroundColor: '#ffffff', padding: '32px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0' }}>
+                    <h1 style={{ margin: 0, fontSize: '2.5rem', color: '#0f172a', fontWeight: '800', letterSpacing: '-0.025em' }}>{dashboardData.kpis.totalResources}</h1>
+                    <p style={{ margin: 0, color: '#64748b', fontSize: '0.75rem', fontWeight: '700', marginTop: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>TOTAL RESOURCES</p>
                 </div>
-                <div style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-                    <h1 style={{ margin: 0, fontSize: '2.5rem', color: '#0f172a' }}>98%</h1>
-                    <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.75rem', fontWeight: 'bold', marginTop: '8px' }}>SYSTEM UPTIME</p>
+                <div style={{ backgroundColor: '#ffffff', padding: '32px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0' }}>
+                    <h1 style={{ margin: 0, fontSize: '2.5rem', color: '#0f172a', fontWeight: '800', letterSpacing: '-0.025em' }}>98%</h1>
+                    <p style={{ margin: 0, color: '#64748b', fontSize: '0.75rem', fontWeight: '700', marginTop: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>SYSTEM UPTIME</p>
                 </div>
-                <div onClick={() => navigate('/bookings')} style={{ cursor: 'pointer', backgroundColor: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-                    <h1 style={{ margin: 0, fontSize: '2.5rem', color: '#0f172a' }}>{dashboardData.kpis.pendingBookings}</h1>
-                    <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.75rem', fontWeight: 'bold', marginTop: '8px' }}>PENDING BOOKINGS</p>
+                <div onClick={() => navigate('/bookings')} style={{ cursor: 'pointer', backgroundColor: '#ffffff', padding: '32px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0' }}>
+                    <h1 style={{ margin: 0, fontSize: '2.5rem', color: '#ea580c', fontWeight: '800', letterSpacing: '-0.025em' }}>{dashboardData.kpis.pendingBookings}</h1>
+                    <p style={{ margin: 0, color: '#64748b', fontSize: '0.75rem', fontWeight: '700', marginTop: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>PENDING BOOKINGS</p>
                 </div>
-                <div onClick={() => navigate('/tickets')} style={{ cursor: 'pointer', backgroundColor: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-                    <h1 style={{ margin: 0, fontSize: '2.5rem', color: '#0f172a' }}>{dashboardData.kpis.openTickets}</h1>
-                    <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.75rem', fontWeight: 'bold', marginTop: '8px' }}>OPEN TICKETS</p>
+                <div onClick={() => navigate('/tickets')} style={{ cursor: 'pointer', backgroundColor: '#ffffff', padding: '32px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0' }}>
+                    <h1 style={{ margin: 0, fontSize: '2.5rem', color: '#dc2626', fontWeight: '800', letterSpacing: '-0.025em' }}>{dashboardData.kpis.openTickets}</h1>
+                    <p style={{ margin: 0, color: '#64748b', fontSize: '0.75rem', fontWeight: '700', marginTop: '12px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>OPEN TICKETS</p>
                 </div>
             </div>
         </div>

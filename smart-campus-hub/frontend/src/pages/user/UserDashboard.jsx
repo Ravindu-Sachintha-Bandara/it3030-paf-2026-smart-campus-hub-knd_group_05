@@ -89,17 +89,17 @@ const UserDashboard = () => {
     });
 
     return (
-        <div style={{ padding: '24px', backgroundColor: '#f8fafc', minHeight: '100vh', width: '100%', boxSizing: 'border-box' }}>
+        <div style={{ padding: '32px', backgroundColor: '#f8fafc', minHeight: '100vh', width: '100%', boxSizing: 'border-box', fontFamily: 'Inter, system-ui, sans-serif' }}>
             
             {/* Welcome Banner */}
             <div style={{ 
-                background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', 
-                padding: '40px', borderRadius: '16px', color: 'white', marginBottom: '32px',
-                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', position: 'relative', overflow: 'hidden'
+                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', 
+                padding: '40px', borderRadius: '12px', color: '#ffffff', marginBottom: '32px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', position: 'relative', overflow: 'hidden'
             }}>
                 <div style={{ position: 'relative', zIndex: 2 }}>
-                    <h1 style={{ fontSize: '2.2rem', margin: 0, fontWeight: '800' }}>Welcome back, {user?.name?.split(' ')[0] || 'Architect'}.</h1>
-                    <p style={{ opacity: 0.8, marginTop: '8px', fontSize: '1.1rem', maxWidth: '600px' }}>
+                    <h1 style={{ fontSize: '2rem', margin: 0, fontWeight: '800', letterSpacing: '-0.025em' }}>Welcome back, {user?.name?.split(' ')[0] || 'Architect'}.</h1>
+                    <p style={{ opacity: 0.9, marginTop: '8px', fontSize: '1.05rem', maxWidth: '600px', fontWeight: '500', color: '#f8fafc' }}>
                         Your dashboard is live. You have {stats.bookings} active bookings and {stats.approvals} requests waiting for approval.
                     </p>
                 </div>
@@ -107,22 +107,22 @@ const UserDashboard = () => {
             </div>
 
             {/* KPI Stats Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '32px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginBottom: '32px' }}>
                 {[
-                    { label: 'MY BOOKINGS', val: stats.bookings, color: '#ea580c', tag: 'ACTIVE', icon: '📅' },
-                    { label: 'OPEN TICKETS', val: stats.tickets, color: '#1e293b', tag: 'LIVE', icon: '🎫' },
-                    { label: 'PENDING APPROVALS', val: stats.approvals, color: '#ea580c', tag: 'URGENT', icon: '⚖️' },
-                    { label: 'NOTIFICATIONS', val: stats.notifications, color: '#1e293b', tag: 'NEW', icon: '🔔' }
+                    { label: 'MY BOOKINGS', val: stats.bookings, color: '#0f172a', tag: 'ACTIVE', icon: '📅', tagColor: '#059669', tagBg: '#ecfdf5' },
+                    { label: 'OPEN TICKETS', val: stats.tickets, color: '#0f172a', tag: 'LIVE', icon: '🎫', tagColor: '#2563eb', tagBg: '#eff6ff' },
+                    { label: 'PENDING APPROVALS', val: stats.approvals, color: '#ea580c', tag: 'URGENT', icon: '⚖️', tagColor: '#d97706', tagBg: '#fffbeb' },
+                    { label: 'NOTIFICATIONS', val: stats.notifications, color: '#0f172a', tag: 'NEW', icon: '🔔', tagColor: '#dc2626', tagBg: '#fef2f2' }
                 ].map((kpi, i) => (
-                    <div key={i} style={{ backgroundColor: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', border: '1px solid #f1f5f9' }}>
+                    <div key={i} style={{ backgroundColor: '#ffffff', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', border: '1px solid #e2e8f0' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', alignItems: 'center' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <span style={{ fontSize: '1.2rem' }}>{kpi.icon}</span>
-                                <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#64748b' }}>{kpi.label}</span>
+                                <span style={{ fontSize: '1.25rem' }}>{kpi.icon}</span>
+                                <span style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{kpi.label}</span>
                             </div>
-                            <span style={{ color: kpi.color, fontSize: '0.7rem', fontWeight: 'bold', backgroundColor: `${kpi.color}10`, padding: '4px 8px', borderRadius: '6px' }}>{kpi.tag}</span>
+                            <span style={{ color: kpi.tagColor, backgroundColor: kpi.tagBg, fontSize: '0.7rem', fontWeight: '700', padding: '4px 8px', borderRadius: '6px', letterSpacing: '0.05em' }}>{kpi.tag}</span>
                         </div>
-                        <h2 style={{ fontSize: '2.2rem', margin: 0, color: '#1e293b', fontWeight: '800' }}>{String(kpi.val).padStart(2, '0')}</h2>
+                        <h2 style={{ fontSize: '2.5rem', margin: 0, color: kpi.color, fontWeight: '800', letterSpacing: '-0.025em' }}>{String(kpi.val).padStart(2, '0')}</h2>
                     </div>
                 ))}
             </div>
@@ -131,61 +131,63 @@ const UserDashboard = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
                 
                 {/* Dynamic Activity Feed */}
-                <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '16px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+                <div style={{ backgroundColor: '#ffffff', padding: '32px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                        <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.2rem' }}>Recent Activity Feed</h3>
-                        <button onClick={() => navigate('/bookings')} style={{ background: 'none', border: 'none', color: '#9a3412', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}>VIEW ALL HISTORY</button>
+                        <h3 style={{ margin: 0, color: '#0f172a', fontSize: '1.25rem', fontWeight: '700' }}>Recent Activity Feed</h3>
+                        <button onClick={() => navigate('/bookings')} style={{ background: 'none', border: 'none', color: '#ea580c', fontWeight: '700', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.color = '#c2410c'} onMouseOut={(e) => e.currentTarget.style.color = '#ea580c'}>VIEW ALL HISTORY</button>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', position: 'relative' }}>
-                        <div style={{ position: 'absolute', left: '19px', top: '10px', bottom: '10px', width: '2px', backgroundColor: '#f1f5f9' }}></div>
+                        <div style={{ position: 'absolute', left: '19px', top: '10px', bottom: '10px', width: '2px', backgroundColor: '#e2e8f0' }}></div>
                         {stats.recentActivity.length > 0 ? stats.recentActivity.map((act, i) => (
                             <div key={i} style={{ display: 'flex', gap: '24px', position: 'relative', zIndex: 2 }}>
-                                <div style={{ width: '40px', height: '40px', backgroundColor: 'white', border: '2px solid #f1f5f9', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{act.icon}</div>
+                                <div style={{ width: '40px', height: '40px', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <span style={{ fontSize: '1.25rem' }}>{act.icon}</span>
+                                </div>
                                 <div>
-                                    <h4 style={{ margin: 0, color: '#1e293b', fontSize: '1rem' }}>{act.title}</h4>
-                                    <p style={{ margin: '4px 0', fontSize: '0.9rem', color: '#64748b' }}>
+                                    <h4 style={{ margin: 0, color: '#0f172a', fontSize: '1rem', fontWeight: '600' }}>{act.title}</h4>
+                                    <p style={{ margin: '4px 0', fontSize: '0.95rem', color: '#334155', fontWeight: '500' }}>
                                         {act.type === 'booking' ? `Resource ${act.resourceName} is ${act.status}` : `Ticket #${act.ticketId} is ${act.status}`}
                                     </p>
-                                    <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{act.time}</span>
+                                    <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '500' }}>{act.time}</span>
                                 </div>
                             </div>
-                        )) : <p style={{ color: '#94a3b8', fontStyle: 'italic' }}>No recent activity to show.</p>}
+                        )) : <p style={{ color: '#64748b', fontStyle: 'italic', fontWeight: '500', fontSize: '0.95rem' }}>No recent activity to show.</p>}
                     </div>
                 </div>
 
                 {/* mini Calendar / Upcoming */}
-                <div style={{ backgroundColor: 'white', padding: '32px', borderRadius: '16px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-                    <h3 style={{ marginBottom: '24px', color: '#1e293b', fontSize: '1.1rem' }}>Upcoming Bookings</h3>
+                <div style={{ backgroundColor: '#ffffff', padding: '32px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)' }}>
+                    <h3 style={{ marginBottom: '24px', color: '#0f172a', fontSize: '1.25rem', fontWeight: '700', margin: '0 0 24px 0' }}>Upcoming Bookings</h3>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', marginBottom: '32px', textAlign: 'center' }}>
                         {['S','M','T','W','T','F','S'].map((day, i) => (
-                            <div key={i} style={{ fontSize: '0.7rem', fontWeight: 'bold', color: '#94a3b8' }}>{day}</div>
+                            <div key={i} style={{ fontSize: '0.75rem', fontWeight: '700', color: '#64748b' }}>{day}</div>
                         ))}
                         {currentDates.map((date, i) => (
                             <div key={i} style={{ 
-                                padding: '10px 0', borderRadius: '10px', fontSize: '0.9rem',
-                                backgroundColor: date === today.getDate() ? '#1e293b' : 'transparent',
-                                color: date === today.getDate() ? 'white' : '#1e293b',
-                                fontWeight: date === today.getDate() ? 'bold' : '600'
+                                padding: '10px 0', borderRadius: '8px', fontSize: '0.95rem',
+                                backgroundColor: date === today.getDate() ? '#ea580c' : 'transparent',
+                                color: date === today.getDate() ? '#ffffff' : '#334155',
+                                fontWeight: date === today.getDate() ? '700' : '600'
                             }}>{date}</div>
                         ))}
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                         {stats.upcoming.length > 0 ? stats.upcoming.map((ub, i) => (
-                            <div key={i} style={{ borderLeft: `4px solid ${i === 0 ? '#ea580c' : '#334155'}`, paddingLeft: '16px' }}>
-                                <p style={{ margin: 0, fontWeight: 'bold', fontSize: '0.95rem', color: '#1e293b' }}>{ub.resource?.name}</p>
-                                <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                            <div key={i} style={{ borderLeft: '4px solid', borderColor: i === 0 ? '#ea580c' : '#0f172a', paddingLeft: '16px' }}>
+                                <p style={{ margin: 0, fontWeight: '700', fontSize: '0.95rem', color: '#0f172a' }}>{ub.resource?.name}</p>
+                                <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: '500' }}>
                                     {new Date(ub.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} | {ub.resource?.location || 'Campus'}
                                 </p>
                             </div>
-                        )) : <p style={{ color: '#94a3b8', fontSize: '0.85rem' }}>No sessions scheduled soon.</p>}
+                        )) : <p style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: '500' }}>No sessions scheduled soon.</p>}
                     </div>
 
                     <button 
                         onClick={() => navigate('/user/calendar')}
-                        style={{ width: '100%', marginTop: '32px', padding: '12px', borderRadius: '10px', border: '1px solid #e2e8f0', backgroundColor: 'white', color: '#1e293b', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer', transition: '0.2s' }}
+                        style={{ width: '100%', marginTop: '32px', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0', backgroundColor: '#ffffff', color: '#334155', fontWeight: '600', fontSize: '0.95rem', cursor: 'pointer', transition: 'background-color 0.2s' }}
                         onMouseOver={(e) => e.target.style.backgroundColor = '#f8fafc'}
-                        onMouseOut={(e) => e.target.style.backgroundColor = 'white'}
+                        onMouseOut={(e) => e.target.style.backgroundColor = '#ffffff'}
                     >
                         Open Full Calendar
                     </button>
